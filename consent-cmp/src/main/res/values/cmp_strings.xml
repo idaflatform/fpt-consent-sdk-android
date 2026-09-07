@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cmp_section_title">Đồng ý xử lý dữ liệu</string>
+    <string name="cmp_list_title">Danh sách sự đồng ý</string>
+    <string name="cmp_hide_list">Ẩn danh sách</string>
+    <string name="cmp_show_list">Hiện danh sách</string>
+    <string name="cmp_collapse">Thu gọn</string>
+    <string name="cmp_expand">Mở rộng</string>
+    <string name="cmp_accept_all">Đồng ý tất cả</string>
+    <string name="cmp_reject_all">Từ chối tất cả</string>
+    <string name="cmp_submit">Đồng ý</string>
+    <string name="cmp_mandatory">Bắt buộc</string>
+    <string name="cmp_sensitive">Nhạy cảm</string>
+    <string name="cmp_loading">Đang tải cấu hình…</string>
+    <string name="cmp_retry">Thử lại</string>
+    <string name="cmp_error_required">Vui lòng đồng ý mục đích bắt buộc: %1$s</string>
+    <string name="cmp_error_field_required">Trường bắt buộc của \"%1$s\": %2$s</string>
+    <string name="cmp_error_generic">Không tải được cấu hình consent</string>
+    <string name="cmp_close">Đóng</string>
+</resources>

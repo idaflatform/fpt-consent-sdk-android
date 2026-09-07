@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Vo bottom sheet: trang thai loading / loi / form consent. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/cmp_bg_sheet">
+
+    <ScrollView
+        android:id="@+id/cmp_scroll_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:padding="@dimen/cmp_space_lg">
+
+        <vn.fpt.fis.cmp.consent.ui.ConsentFormView
+            android:id="@+id/cmp_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/cmp_state_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <ProgressBar
+            android:layout_width="32dp"
+            android:layout_height="32dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_md"
+            android:text="@string/cmp_loading"
+            android:textColor="@color/cmp_text_secondary"
+            android:textSize="@dimen/cmp_text_body" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/cmp_state_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/cmp_tv_state_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/cmp_error_generic"
+            android:textColor="@color/cmp_error"
+            android:textSize="@dimen/cmp_text_body" />
+
+        <TextView
+            android:id="@+id/cmp_btn_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_md"
+            android:background="@drawable/cmp_bg_button_primary"
+            android:paddingStart="@dimen/cmp_space_lg"
+            android:paddingTop="@dimen/cmp_space_sm"
+            android:paddingEnd="@dimen/cmp_space_lg"
+            android:paddingBottom="@dimen/cmp_space_sm"
+            android:text="@string/cmp_retry"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/cmp_text_body" />
+    </LinearLayout>
+</FrameLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ConsentFormView">
+        <!--
+          true  = view nam trong form cua app (app co nut submit rieng) -> AN nut cua SDK,
+                  app tu goi ConsentCmp.submit(...) khi nguoi dung bam nut cua minh.
+          false = view dung doc lap (mac dinh) -> HIEN nut "Tu choi tat ca" / "Dong y" va
+                  SDK tu goi /sendData khi nguoi dung bam.
+        -->
+        <attr name="cmpEmbeddedInForm" format="boolean" />
+        <!-- Hien dong tieu de nho phia tren the ("Dong y xu ly du lieu"). -->
+        <attr name="cmpShowSectionTitle" format="boolean" />
+        <!--
+          false (mac dinh) = chip ben thu ba hien duoi MOI truong cua purpose (giong portal/web).
+          true             = chi hien o truong co sharedWithSystem = true.
+        -->
+        <attr name="cmpThirdPartiesOnSharedOnly" format="boolean" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mot truong du lieu trong purpose: ten + chip ben thu ba + toggle rieng. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/cmp_space_sm"
+    android:background="@drawable/cmp_bg_field"
+    android:baselineAligned="false"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/cmp_space_md">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/cmp_tv_field_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/cmp_text_primary"
+                android:textSize="@dimen/cmp_text_body"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/cmp_tv_field_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/cmp_space_sm"
+                android:background="@drawable/cmp_bg_chip"
+                android:paddingStart="@dimen/cmp_space_sm"
+                android:paddingTop="2dp"
+                android:paddingEnd="@dimen/cmp_space_sm"
+                android:paddingBottom="2dp"
+                android:text="@string/cmp_mandatory"
+                android:textColor="@color/cmp_chip_text"
+                android:textSize="@dimen/cmp_text_chip"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/cmp_scroll_parties"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_sm"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/cmp_container_parties"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/cmp_sw_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/cmp_space_sm"
+        android:minWidth="0dp"
+        android:minHeight="0dp" />
+</LinearLayout>

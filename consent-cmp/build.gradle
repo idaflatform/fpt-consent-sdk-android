@@ -1,0 +1,125 @@
+plugins {
+    id 'com.android.library'
+    id 'com.vanniktech.maven.publish'
+}
+
+android {
+    namespace 'vn.fpt.fis.cmp.consent'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 34
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // KHONG khai android.publishing.singleVariant('release') o day: plugin
+    // com.vanniktech.maven.publish da tu khai (kem sources jar + javadoc jar ma Maven Central
+    // bat buoc). Khai lai se loi "Using singleVariant publishing DSL multiple times".
+    // Muon doi lua chon nay thi dung mavenPublishing.configure(...) o duoi.
+}
+
+dependencies {
+    // Public API dung FragmentManager + annotation nen de o 'api' cho app consume duoc.
+    api 'androidx.fragment:fragment:1.8.2'
+    api 'androidx.annotation:annotation:1.8.2'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core:1.13.1'
+    // BottomSheetDialogFragment + SwitchMaterial
+    implementation 'com.google.android.material:material:1.11.0'
+}
+
+mavenPublishing {
+    // Mac dinh cua plugin cho thu vien Android: publish variant 'release' kem sources jar va
+    // javadoc jar — dung dieu Maven Central bat buoc, nen khong can khai them gi.
+    // Can variant khac thi dung:
+    //   configure(new com.vanniktech.maven.publish.AndroidSingleVariantLibrary('release', true, true))
+
+    // Upload len Central Portal roi tu release. Doi tham so thu hai thanh false neu muon
+    // tu bam Publish tren https://central.sonatype.com/publishing/deployments.
+    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL, true)
+
+    // Chi ky khi da cau hinh khoa GPG. Nho vay `publishToMavenLocal` chay duoc de kiem tra artifact
+    // ngay ca khi chua tao khoa; con khi day len Central thi bat buoc phai co (Central tu choi
+    // artifact khong chu ky). Cach cau hinh: tools/setup-signing.sh
+    if (project.findProperty('signingInMemoryKey') || project.findProperty('signing.keyId')) {
+        signAllPublications()
+    } else {
+        logger.warn('[consent-cmp] Chua co khoa GPG -> BO QUA ky artifact. ' +
+                'Chay tools/setup-signing.sh truoc khi publish len Maven Central.')
+    }
+
+    coordinates(
+            project.findProperty('sdkGroupId') ?: 'io.github.idaflatform',
+            'fpt-consent-sdk',
+            project.findProperty('sdkVersion') ?: '1.0.0')
+
+    pom {
+        name = 'FPT Consent SDK for Android'
+        description = 'Android SDK for personal data consent collection. Loads a consent ' +
+                'configuration from a Consent Management Platform, renders the consent list ' +
+                '(purposes, data fields, third parties) with required-item validation, and submits ' +
+                'the user decision as an auditable consent record.'
+        inceptionYear = '2026'
+        url = project.findProperty('sdkProjectUrl') ?: 'https://github.com/idaflatform/fpt-consent-sdk'
+
+        licenses {
+            license {
+                name = 'The Apache License, Version 2.0'
+                url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution = 'repo'
+            }
+        }
+        developers {
+            developer {
+                id = project.findProperty('sdkDeveloperId') ?: 'idaflatform'
+                name = project.findProperty('sdkDeveloperName') ?: 'idaflatform'
+                url = project.findProperty('sdkProjectUrl') ?: ''
+            }
+        }
+        scm {
+            url = project.findProperty('sdkProjectUrl') ?: ''
+            connection = project.findProperty('sdkScmConnection') ?: ''
+            developerConnection = project.findProperty('sdkScmDeveloperConnection') ?: ''
+        }
+    }
+}
+
+// Tuy chon: day song song len Maven noi bo (Nexus/Artifactory) khi co khai cmpRepoUrl.
+// Task sinh ra: publishAllPublicationsToInternalRepository
+publishing {
+    repositories {
+        if (project.hasProperty('cmpRepoUrl')) {
+            def repoUser = project.findProperty('cmpRepoUser') ?: System.getenv('CMP_REPO_USER')
+            def repoPassword = project.findProperty('cmpRepoPassword') ?: System.getenv('CMP_REPO_PASSWORD')
+            maven {
+                name = 'internal'
+                url = project.property('cmpRepoUrl')
+                allowInsecureProtocol = Boolean.parseBoolean(
+                        (project.findProperty('cmpRepoInsecure') ?: 'false').toString())
+                if (repoUser) {
+                    credentials {
+                        username = repoUser.toString()
+                        password = (repoPassword ?: '').toString()
+                    }
+                }
+            }
+        }
+        // Thu muc local de kiem tra artifact truoc khi day len Central.
+        maven {
+            name = 'localRepo'
+            url = layout.buildDirectory.dir('repo')
+        }
+    }
+}

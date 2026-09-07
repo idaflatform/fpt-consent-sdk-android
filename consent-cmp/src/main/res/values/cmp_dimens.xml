@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="cmp_radius_card">12dp</dimen>
+    <dimen name="cmp_radius_field">10dp</dimen>
+    <dimen name="cmp_radius_chip">6dp</dimen>
+    <dimen name="cmp_space_xs">4dp</dimen>
+    <dimen name="cmp_space_sm">8dp</dimen>
+    <dimen name="cmp_space_md">12dp</dimen>
+    <dimen name="cmp_space_lg">16dp</dimen>
+    <dimen name="cmp_text_title">18sp</dimen>
+    <dimen name="cmp_text_purpose">15sp</dimen>
+    <dimen name="cmp_text_body">13sp</dimen>
+    <dimen name="cmp_text_link">13sp</dimen>
+    <dimen name="cmp_text_chip">11sp</dimen>
+</resources>

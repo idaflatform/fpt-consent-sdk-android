@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Khoi "Danh sach su dong y": header + danh sach purpose + hanh dong. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/cmp_tv_section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/cmp_space_sm"
+        android:text="@string/cmp_section_title"
+        android:textColor="@color/cmp_text_primary"
+        android:textSize="@dimen/cmp_text_body"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cmp_bg_card"
+        android:orientation="vertical"
+        android:padding="@dimen/cmp_space_lg">
+
+        <!-- Header: tieu de + cac link dieu khien + toggle dong y tat ca -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/cmp_tv_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/cmp_list_title"
+                android:textColor="@color/cmp_text_primary"
+                android:textSize="@dimen/cmp_text_title"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/cmp_btn_toggle_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/cmp_space_xs"
+                android:text="@string/cmp_hide_list"
+                android:textColor="@color/cmp_link_alt"
+                android:textSize="@dimen/cmp_text_link" />
+
+            <TextView
+                android:id="@+id/cmp_btn_collapse_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/cmp_space_xs"
+                android:text="@string/cmp_collapse"
+                android:textColor="@color/cmp_link"
+                android:textSize="@dimen/cmp_text_link" />
+
+            <TextView
+                android:id="@+id/cmp_tv_accept_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/cmp_space_xs"
+                android:text="@string/cmp_accept_all"
+                android:textColor="@color/cmp_text_secondary"
+                android:textSize="@dimen/cmp_text_link" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/cmp_sw_accept_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/cmp_space_xs"
+                android:minWidth="0dp"
+                android:minHeight="0dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/cmp_tv_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_xs"
+            android:textColor="@color/cmp_accent"
+            android:textSize="@dimen/cmp_text_body"
+            android:visibility="gone" />
+
+        <!-- Danh sach purpose, moi purpose la mot the con -->
+        <LinearLayout
+            android:id="@+id/cmp_container_purposes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_md"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/cmp_tv_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_sm"
+            android:textColor="@color/cmp_error"
+            android:textSize="@dimen/cmp_text_body"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/cmp_container_actions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_md"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/cmp_btn_reject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cmp_bg_button_outline"
+                android:paddingStart="@dimen/cmp_space_lg"
+                android:paddingTop="@dimen/cmp_space_sm"
+                android:paddingEnd="@dimen/cmp_space_lg"
+                android:paddingBottom="@dimen/cmp_space_sm"
+                android:text="@string/cmp_reject_all"
+                android:textColor="@color/cmp_text_secondary"
+                android:textSize="@dimen/cmp_text_body" />
+
+            <TextView
+                android:id="@+id/cmp_btn_submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/cmp_space_sm"
+                android:background="@drawable/cmp_bg_button_primary"
+                android:paddingStart="@dimen/cmp_space_lg"
+                android:paddingTop="@dimen/cmp_space_sm"
+                android:paddingEnd="@dimen/cmp_space_lg"
+                android:paddingBottom="@dimen/cmp_space_sm"
+                android:text="@string/cmp_submit"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/cmp_text_body"
+                android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/cmp_progress"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/cmp_space_sm"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

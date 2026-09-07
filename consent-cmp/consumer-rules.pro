@@ -1,0 +1,2 @@
+-keep class vn.fpt.fis.cmp.consent.model.** { *; }
+-keep class vn.fpt.fis.cmp.consent.ConsentState { *; }

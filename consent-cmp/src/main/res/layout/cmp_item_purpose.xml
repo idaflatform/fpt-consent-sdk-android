@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mot muc dich xu ly du lieu: ten + toggle + mo ta + danh sach truong du lieu. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/cmp_space_md"
+    android:background="@drawable/cmp_bg_card"
+    android:orientation="vertical"
+    android:padding="@dimen/cmp_space_md">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/cmp_tv_purpose_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/cmp_text_primary"
+            android:textSize="@dimen/cmp_text_purpose"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/cmp_tv_purpose_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/cmp_space_xs"
+            android:background="@drawable/cmp_bg_chip"
+            android:paddingStart="@dimen/cmp_space_sm"
+            android:paddingTop="2dp"
+            android:paddingEnd="@dimen/cmp_space_sm"
+            android:paddingBottom="2dp"
+            android:text="@string/cmp_mandatory"
+            android:textColor="@color/cmp_chip_text"
+            android:textSize="@dimen/cmp_text_chip"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/cmp_btn_purpose_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/cmp_space_xs"
+            android:text="@string/cmp_collapse"
+            android:textColor="@color/cmp_link_alt"
+            android:textSize="@dimen/cmp_text_link" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/cmp_sw_purpose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/cmp_space_xs"
+            android:minWidth="0dp"
+            android:minHeight="0dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/cmp_tv_purpose_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/cmp_space_xs"
+        android:textColor="@color/cmp_primary"
+        android:textSize="@dimen/cmp_text_body"
+        android:visibility="gone" />
+
+    <View
+        android:id="@+id/cmp_divider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="@dimen/cmp_space_md"
+        android:background="@drawable/cmp_divider_dashed"
+        android:layerType="software" />
+
+    <LinearLayout
+        android:id="@+id/cmp_container_fields"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/cmp_space_md"
+        android:orientation="vertical" />
+</LinearLayout>

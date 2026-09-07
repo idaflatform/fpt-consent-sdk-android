@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cmp_bg">#FFFFFFFF</color>
+    <color name="cmp_surface">#FFF7F8FB</color>
+    <color name="cmp_border">#FFE5E9F2</color>
+    <color name="cmp_divider">#FFD9DEE9</color>
+
+    <color name="cmp_text_primary">#FF16233C</color>
+    <color name="cmp_text_secondary">#FF6B7690</color>
+    <color name="cmp_text_muted">#FF98A2B3</color>
+
+    <color name="cmp_primary">#FF2F6FED</color>
+    <color name="cmp_primary_pressed">#FF2559C6</color>
+    <color name="cmp_link">#FF2F6FED</color>
+    <color name="cmp_link_alt">#FF12A150</color>
+    <color name="cmp_accent">#FFEA7A2B</color>
+    <color name="cmp_error">#FFD92D20</color>
+
+    <color name="cmp_chip_bg">#FFEEF2FF</color>
+    <color name="cmp_chip_text">#FF4257B2</color>
+    <color name="cmp_chip_border">#FFD6DEFF</color>
+
+    <color name="cmp_switch_thumb_off">#FFFFFFFF</color>
+    <color name="cmp_switch_track_off">#FFDCE0EA</color>
+</resources>

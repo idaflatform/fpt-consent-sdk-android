@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chip ten ben thu ba / he thong duoc chia se du lieu. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/cmp_space_sm"
+    android:background="@drawable/cmp_bg_chip"
+    android:paddingStart="@dimen/cmp_space_sm"
+    android:paddingTop="3dp"
+    android:paddingEnd="@dimen/cmp_space_sm"
+    android:paddingBottom="3dp"
+    android:textColor="@color/cmp_chip_text"
+    android:textSize="@dimen/cmp_text_chip" />

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme rieng cho bottom sheet: app dung theme AppCompat van hien dung Material switch. -->
+    <style name="Cmp.BottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="colorPrimary">@color/cmp_primary</item>
+        <item name="colorSecondary">@color/cmp_primary</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="bottomSheetStyle">@style/Cmp.BottomSheet</item>
+    </style>
+
+    <style name="Cmp.BottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="android:background">@drawable/cmp_bg_sheet</item>
+    </style>
+
+    <!--
+      Theme dung khi inflate ConsentFormView: SwitchMaterial can cac attr cua Material,
+      ban Bridge cho phep app van giu theme AppCompat cua minh.
+    -->
+    <style name="Cmp.ViewTheme" parent="Theme.MaterialComponents.Light.Bridge">
+        <item name="colorPrimary">@color/cmp_primary</item>
+        <item name="colorSecondary">@color/cmp_primary</item>
+    </style>
+</resources>
