@@ -262,6 +262,15 @@ ConsentCmp.get().setValueSource(new MapValueSource()
 SDK đối chiếu theo `name` (+ `dataType`), app không cần biết id của trường. Giá trị được gửi kèm **bất kể
 toggle bật hay tắt**; `isAccept` mới là lựa chọn của người dùng.
 
+> **Trường ẩn (`display = false`).** `/config` trả về **mọi** trường của form dữ liệu nguồn, nhưng chỉ
+> trường được chọn cho mục đích đó trong template mới có `display = true`. Trường `display = false` vẫn
+> nằm trong `item.dataFields` để app biết form nguồn thu những gì, nhưng SDK **không** dựng UI cho nó,
+> **không** bao giờ đặt `isAccept = true` và **không** tính vào ràng buộc bắt buộc. Nhưng SDK **vẫn**
+> quét form để gửi `value` khi `sharedWithSystem = true` — bản ghi phải thể hiện đúng dữ liệu nào đã
+> được chia sẻ, nên trường ẩn vẫn có khoá trong `values` với `isAccept = false`. Nếu app tự duyệt
+> `item.dataFields`, hãy tự bỏ qua trường có `display = false` khi dựng UI. Backend cũ không trả khoá
+> này — khi đó SDK coi như `display = true`.
+
 ## Bước 7. Gate tính năng theo quyết định
 
 ```java

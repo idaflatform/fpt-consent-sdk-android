@@ -101,7 +101,9 @@ public final class ConsentJson {
                     optString(o, "dataType"),
                     o.optBoolean("required", false),
                     o.optBoolean("sensitive", false),
-                    o.optBoolean("sharedWithSystem", false)));
+                    o.optBoolean("sharedWithSystem", false),
+                    // Backend cu khong tra "display" -> mac dinh hien, giu tuong thich nguoc (R16).
+                    o.optBoolean("display", true)));
         }
         return fields;
     }

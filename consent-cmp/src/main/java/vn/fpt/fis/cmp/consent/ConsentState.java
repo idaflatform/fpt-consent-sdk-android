@@ -40,6 +40,12 @@ public final class ConsentState implements Serializable {
         public boolean accepted;
         /** Gia tri nguoi dung nhap; null khi form cua app khong co truong tuong ung. */
         public String value;
+        /**
+         * Ban sao cua {@code ConsentField.display} — de state tu chan viec bat truong an ma khong
+         * phai cam theo config o moi loi goi (R16). Khong luu xuong storage:
+         * {@code defaultsOf}/{@code merge} luon dung lai tu {@code /config} moi.
+         */
+        public boolean display = true;
 
         FieldDecision(boolean accepted, String value) {
             this.accepted = accepted;
@@ -68,6 +74,9 @@ public final class ConsentState implements Serializable {
             boolean granted = item.mustBeGranted() || item.defaultChecked;
             state.setGranted(item.key(), granted);
             for (ConsentField field : item.dataFields) {
+                // Truong an (display = false) van co khoa trong values de gui kem value, nhung
+                // isAccept luon false — setFieldGranted tu chan nho co display (R16).
+                state.setFieldDisplay(item.key(), field.key(), field.display);
                 // Purpose cha phai dang bat moi giu duoc truong bat buoc o trang thai bat.
                 state.setFieldGranted(item.key(), field.key(), granted && field.required);
             }
@@ -166,9 +175,21 @@ public final class ConsentState implements Serializable {
 
     /** Bat/tat mot truong du lieu; bat truong thi muc dich cha cung duoc bat theo. */
     public void setFieldGranted(String purposeKey, String fieldKey, boolean granted) {
-        decision(purposeKey, fieldKey, true).accepted = granted;
-        if (granted) {
+        FieldDecision decision = decision(purposeKey, fieldKey, true);
+        // CHOT chan duy nhat cho R16: truong an khong bao gio len true, du duong di nao goi vao
+        // (bat purpose cha, "dong y tat ca", nap lai ban ghi cu, app goi thang).
+        decision.accepted = granted && decision.display;
+        if (decision.accepted) {
             purposes.put(purposeKey, true);
+        }
+    }
+
+    /** Danh dau truong co duoc hoi nguoi dung hay khong; goi truoc khi set {@code granted}. */
+    public void setFieldDisplay(String purposeKey, String fieldKey, boolean display) {
+        FieldDecision decision = decision(purposeKey, fieldKey, true);
+        decision.display = display;
+        if (!display) {
+            decision.accepted = false;
         }
     }
 
@@ -207,6 +228,7 @@ public final class ConsentState implements Serializable {
         setGranted(purposeKey, granted);
         if (granted) {
             for (ConsentField field : item.dataFields) {
+                // Truong an bi setFieldGranted giu o false (R16).
                 setFieldGranted(purposeKey, field.key(), true);
             }
         }
@@ -224,6 +246,10 @@ public final class ConsentState implements Serializable {
         ConsentItem item = itemOf(config, purposeKey);
         ConsentField field = fieldOf(item, fieldKey);
 
+        // Truong an khong co toggle tren UI; app goi thang thi cung khong doi duoc gi (R16).
+        if (field != null && !field.display) {
+            return ToggleResult.APPLIED;
+        }
         if (!granted && field != null && field.required && isGranted(purposeKey)) {
             setFieldGranted(purposeKey, fieldKey, true);
             return ToggleResult.BLOCKED_REQUIRED;
@@ -342,7 +368,8 @@ public final class ConsentState implements Serializable {
         }
         for (Map<String, FieldDecision> group : fields.values()) {
             for (FieldDecision decision : group.values()) {
-                if (!decision.accepted) {
+                // Truong an khong bao gio bat duoc nen khong tinh vao "da dong y tat ca" (R16).
+                if (decision.display && !decision.accepted) {
                     return false;
                 }
             }
@@ -395,7 +422,8 @@ public final class ConsentState implements Serializable {
                 continue;
             }
             for (ConsentField field : item.dataFields) {
-                if (field.required && !isFieldGranted(item.key(), field.key())) {
+                // Truong an khong tinh vao rang buoc bat buoc (R16).
+                if (field.required && field.display && !isFieldGranted(item.key(), field.key())) {
                     return new MissingRequired(item, field);
                 }
             }

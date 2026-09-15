@@ -50,10 +50,15 @@ public final class ConsentItem implements Serializable {
         return code != null ? code : id;
     }
 
-    /** Truong du lieu bat buoc dau tien cua purpose nay; null neu khong co. */
+    /**
+     * Truong du lieu bat buoc dau tien cua purpose nay; null neu khong co.
+     *
+     * <p>Chi tinh truong dang hien: truong {@code display = false} nguoi dung khong nhin thay va
+     * khong bam duoc, nen khong duoc phep chan submit hay khoa purpose (R16).</p>
+     */
     public ConsentField firstRequiredField() {
         for (ConsentField field : dataFields) {
-            if (field.required) {
+            if (field.required && field.display) {
                 return field;
             }
         }

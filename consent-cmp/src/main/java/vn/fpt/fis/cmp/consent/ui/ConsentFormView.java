@@ -490,6 +490,11 @@ public class ConsentFormView extends LinearLayout {
             }
 
             for (ConsentField field : item.dataFields) {
+                // /config tra ve ca truong khong duoc chon cho purpose — chi de app biet form nguon
+                // thu nhung gi. Khong dung UI cho chung (R16).
+                if (!field.display) {
+                    continue;
+                }
                 FieldHolder holder = new FieldHolder(inflater, fieldsContainer, item, field);
                 fields.add(holder);
                 fieldsContainer.addView(holder.root);
