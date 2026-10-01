@@ -15,5 +15,7 @@
           true             = chi hien o truong co sharedWithSystem = true.
         -->
         <attr name="cmpThirdPartiesOnSharedOnly" format="boolean" />
+        <!-- true = view tự tải /config, tự hiện đang tải / lỗi + nút "Thử lại". Mặc định false. -->
+        <attr name="cmpAutoLoad" format="boolean" />
     </declare-styleable>
 </resources>

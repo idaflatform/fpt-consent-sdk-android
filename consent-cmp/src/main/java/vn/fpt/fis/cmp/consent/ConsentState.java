@@ -119,6 +119,45 @@ public final class ConsentState implements Serializable {
         return state;
     }
 
+    /** Bản sao độc lập, dùng khi gửi trên thread nền. */
+    public ConsentState copy() {
+        ConsentState copy = new ConsentState();
+        copy.purposes.putAll(purposes);
+        for (Map.Entry<String, Map<String, FieldDecision>> group : fields.entrySet()) {
+            Map<String, FieldDecision> groupCopy = new LinkedHashMap<>();
+            for (Map.Entry<String, FieldDecision> field : group.getValue().entrySet()) {
+                FieldDecision source = field.getValue();
+                FieldDecision decision = new FieldDecision(source.accepted, source.value);
+                decision.display = source.display;
+                groupCopy.put(field.getKey(), decision);
+            }
+            copy.fields.put(group.getKey(), groupCopy);
+        }
+        copy.extras.putAll(extras);
+        copy.consentId = consentId;
+        copy.configCode = configCode;
+        copy.submittedAtMs = submittedAtMs;
+        return copy;
+    }
+
+    /** Áp lại {@code display} theo cấu hình (không lưu xuống storage) để trường ẩn luôn tắt (R16). */
+    public void applyDisplay(ConsentConfig config) {
+        if (config == null) {
+            return;
+        }
+        for (ConsentItem item : config.items()) {
+            Map<String, FieldDecision> group = fields.get(item.key());
+            if (group == null) {
+                continue;
+            }
+            for (ConsentField field : item.dataFields) {
+                if (group.containsKey(field.key())) {
+                    setFieldDisplay(item.key(), field.key(), field.display);
+                }
+            }
+        }
+    }
+
     /** Bo cac purpose / truong khong con trong cau hinh hien tai (khong them khoa moi). */
     public void retainOnly(ConsentConfig config) {
         if (config == null) {

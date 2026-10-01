@@ -2,6 +2,7 @@ package vn.fpt.fis.cmp.consent.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -23,6 +25,7 @@ import vn.fpt.fis.cmp.consent.ConsentCallback;
 import vn.fpt.fis.cmp.consent.ConsentCmp;
 import vn.fpt.fis.cmp.consent.ConsentException;
 import vn.fpt.fis.cmp.consent.ConsentState;
+import vn.fpt.fis.cmp.consent.ConsentValueSource;
 import vn.fpt.fis.cmp.consent.R;
 import vn.fpt.fis.cmp.consent.model.ConsentConfig;
 import vn.fpt.fis.cmp.consent.model.ConsentField;
@@ -67,6 +70,17 @@ public class ConsentFormView extends LinearLayout {
         void onStateChanged(ConsentState state, boolean allRequiredGranted);
     }
 
+    /** Kết quả khi view tự tải {@code /config} (autoload hoặc {@link #reload()}). */
+    public interface OnLoadListener {
+
+        /** Đã tải và vẽ xong form. */
+        void onLoaded(ConsentConfig config);
+
+        /** Tải lỗi; view đã hiện nút "Thử lại". */
+        default void onLoadFailed(ConsentException error) {
+        }
+    }
+
     private TextView tvSection;
     private TextView tvTitle;
     private TextView tvDescription;
@@ -78,6 +92,10 @@ public class ConsentFormView extends LinearLayout {
     private SwitchMaterial swAcceptAll;
     private LinearLayout containerPurposes;
     private ProgressBar progress;
+    private View contentView;
+    private View loadingView;
+    private View errorStateView;
+    private TextView tvErrorState;
 
     private LayoutInflater themedInflater;
     private final List<PurposeHolder> holders = new ArrayList<>();
@@ -86,9 +104,17 @@ public class ConsentFormView extends LinearLayout {
     private OnActionListener actionListener;
     private OnStateChangeListener stateChangeListener;
     private OnSubmitResultListener submitResultListener;
+    private OnLoadListener loadListener;
 
     /** Chan vong lap khi code tu set trang thai switch. */
     private boolean binding;
+    /** Đang gọi /sendData — chặn bấm lặp và khoá mọi toggle. */
+    private boolean submitting;
+    /** true = tự gọi /config khi gắn vào màn hình. */
+    private boolean autoLoad;
+    private boolean loading;
+    /** Bỏ qua callback của lần tải cũ. */
+    private int loadGeneration;
     private boolean listHidden;
     private boolean allCollapsed;
     /** true = nam trong form cua app -> an nut cua SDK. */
@@ -128,7 +154,17 @@ public class ConsentFormView extends LinearLayout {
         swAcceptAll = findViewById(R.id.cmp_sw_accept_all);
         containerPurposes = findViewById(R.id.cmp_container_purposes);
         progress = findViewById(R.id.cmp_progress);
+        contentView = findViewById(R.id.cmp_form_content);
+        loadingView = findViewById(R.id.cmp_form_state_loading);
+        errorStateView = findViewById(R.id.cmp_form_state_error);
+        tvErrorState = findViewById(R.id.cmp_form_tv_state_error);
 
+        findViewById(R.id.cmp_form_btn_retry).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reload();
+            }
+        });
         btnToggleList.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,20 +193,19 @@ public class ConsentFormView extends LinearLayout {
                     actionListener.onRejectAll(state);
                 } else {
                     // Tu choi tat ca cung la mot quyet dinh -> van ghi nhan bang chung.
-                    sendConsent();
+                    submit(resultNotifier());
                 }
             }
         });
         btnSubmit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!validateRequired()) {
-                    return;
-                }
                 if (actionListener != null) {
-                    actionListener.onSubmit(state);
+                    if (validateRequired()) {
+                        actionListener.onSubmit(state);
+                    }
                 } else {
-                    sendConsent();
+                    submit(resultNotifier());
                 }
             }
         });
@@ -188,6 +223,7 @@ public class ConsentFormView extends LinearLayout {
                 showSection = values.getBoolean(R.styleable.ConsentFormView_cmpShowSectionTitle, true);
                 thirdPartiesOnSharedOnly = values.getBoolean(
                         R.styleable.ConsentFormView_cmpThirdPartiesOnSharedOnly, false);
+                autoLoad = values.getBoolean(R.styleable.ConsentFormView_cmpAutoLoad, false);
             } finally {
                 values.recycle();
             }
@@ -233,18 +269,11 @@ public class ConsentFormView extends LinearLayout {
         this.submitResultListener = listener;
     }
 
-    /** Tu goi /sendData bang lua chon hien tai — dung o che do dung doc lap. */
-    private void sendConsent() {
-        if (!ConsentCmp.isInitialized()) {
-            setError(getContext().getString(R.string.cmp_error_generic));
-            return;
-        }
-        setSubmitting(true);
-        ConsentCmp.get().submit(state, new ConsentCallback<SendConsentResult>() {
+    /** Chuyển kết quả sang {@link OnSubmitResultListener}. */
+    private ConsentCallback<SendConsentResult> resultNotifier() {
+        return new ConsentCallback<SendConsentResult>() {
             @Override
             public void onSuccess(SendConsentResult result) {
-                setSubmitting(false);
-                setError(null);
                 if (submitResultListener != null) {
                     submitResultListener.onSubmitted(state, result);
                 }
@@ -252,13 +281,186 @@ public class ConsentFormView extends LinearLayout {
 
             @Override
             public void onError(ConsentException error) {
-                setSubmitting(false);
-                setError(error.getMessage());
                 if (submitResultListener != null) {
                     submitResultListener.onSubmitFailed(error);
                 }
             }
+        };
+    }
+
+    // ==================== Gửi dữ liệu ====================
+
+    /**
+     * Kiểm tra mục bắt buộc, gửi {@code /sendData}, hiện lỗi trên form. Bấm lặp khi đang gửi bị bỏ qua.
+     * Giá trị trường lấy từ {@code ConsentCmp.setValueSource}/{@code bindForm}, không có thì quét
+     * ô nhập có {@code android:tag} trên màn hình.
+     */
+    @MainThread
+    public void submit(@Nullable ConsentCallback<SendConsentResult> callback) {
+        submit(null, callback);
+    }
+
+    /** Như {@link #submit(ConsentCallback)}, truyền thẳng giá trị trường cho lần gửi này. */
+    @MainThread
+    public void submit(@Nullable ConsentValueSource values,
+                       @Nullable final ConsentCallback<SendConsentResult> callback) {
+        if (submitting) {
+            // Chặn bấm lặp.
+            return;
+        }
+        if (!ConsentCmp.isInitialized()) {
+            fail(callback, new ConsentException(getContext().getString(R.string.cmp_error_not_initialized)));
+            return;
+        }
+        if (config == null) {
+            fail(callback, new ConsentException(getContext().getString(R.string.cmp_error_no_config)));
+            return;
+        }
+        String required = requiredMessage();
+        if (required != null) {
+            fail(callback, new ConsentException(required));
+            return;
+        }
+        ConsentValueSource source = values != null ? values : ConsentCmp.get().valueSource();
+        if (source == null) {
+            source = new ViewFormValueSource(getRootView());
+        }
+        setError(null);
+        setSubmitting(true);
+        // Kiểm tra theo cấu hình form đang hiển thị.
+        ConsentCmp.get().submit(state, config, source, new ConsentCallback<SendConsentResult>() {
+            @Override
+            public void onSuccess(SendConsentResult result) {
+                setSubmitting(false);
+                setError(null);
+                if (callback != null) {
+                    callback.onSuccess(result);
+                }
+            }
+
+            @Override
+            public void onError(ConsentException error) {
+                setSubmitting(false);
+                showError(error.getMessage() != null
+                        ? error.getMessage() : getContext().getString(R.string.cmp_error_generic));
+                if (callback != null) {
+                    callback.onError(error);
+                }
+            }
         });
+    }
+
+    private void fail(@Nullable ConsentCallback<SendConsentResult> callback, ConsentException error) {
+        showError(error.getMessage());
+        if (callback != null) {
+            callback.onError(error);
+        }
+    }
+
+    /** Hiện lỗi và cuộn tới dòng lỗi. */
+    private void showError(@Nullable CharSequence message) {
+        setError(message);
+        if (tvError.getVisibility() != VISIBLE) {
+            return;
+        }
+        tvError.post(new Runnable() {
+            @Override
+            public void run() {
+                tvError.requestRectangleOnScreen(
+                        new Rect(0, 0, tvError.getWidth(), tvError.getHeight()), false);
+            }
+        });
+    }
+
+    // ==================== Tải cấu hình ====================
+
+    /** Nhận kết quả khi view tự tải {@code /config}. */
+    public void setOnLoadListener(@Nullable OnLoadListener listener) {
+        this.loadListener = listener;
+    }
+
+    /** Tương đương {@code app:cmpAutoLoad}; bật khi view đã hiển thị thì tải ngay. */
+    public void setAutoLoad(boolean autoLoad) {
+        this.autoLoad = autoLoad;
+        if (autoLoad && isAttachedToWindow()) {
+            autoLoadIfNeeded();
+        }
+    }
+
+    /** True khi đang tải {@code /config}. */
+    public boolean isLoading() {
+        return loading;
+    }
+
+    /** Tải lại {@code /config} rồi vẽ lại form; lỗi thì hiện nút "Thử lại". */
+    @MainThread
+    public void reload() {
+        if (!ConsentCmp.isInitialized()) {
+            showLoadError(new ConsentException(getContext().getString(R.string.cmp_error_not_initialized)));
+            return;
+        }
+        final int generation = ++loadGeneration;
+        loading = true;
+        showState(loadingView);
+        ConsentCmp.get().fetchConfig(new ConsentCallback<ConsentConfig>() {
+            @Override
+            public void onSuccess(ConsentConfig result) {
+                if (generation != loadGeneration) {
+                    // Kết quả cũ, bỏ qua.
+                    return;
+                }
+                bind(result, ConsentCmp.get().savedState());
+                if (loadListener != null) {
+                    loadListener.onLoaded(result);
+                }
+            }
+
+            @Override
+            public void onError(ConsentException error) {
+                if (generation != loadGeneration) {
+                    return;
+                }
+                loading = false;
+                showLoadError(error);
+            }
+        });
+    }
+
+    private void showLoadError(ConsentException error) {
+        tvErrorState.setText(error.getMessage() != null
+                ? error.getMessage() : getContext().getString(R.string.cmp_error_generic));
+        showState(errorStateView);
+        if (loadListener != null) {
+            loadListener.onLoadFailed(error);
+        }
+    }
+
+    private void showState(View visible) {
+        contentView.setVisibility(visible == contentView ? VISIBLE : GONE);
+        loadingView.setVisibility(visible == loadingView ? VISIBLE : GONE);
+        errorStateView.setVisibility(visible == errorStateView ? VISIBLE : GONE);
+    }
+
+    private void autoLoadIfNeeded() {
+        if (autoLoad && config == null && !loading && !isInEditMode()) {
+            reload();
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        autoLoadIfNeeded();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (loading) {
+            // Bỏ kết quả đang tải; gắn lại thì tải lại.
+            loadGeneration++;
+            loading = false;
+        }
     }
 
     public void setOnActionListener(@Nullable OnActionListener listener) {
@@ -333,6 +535,10 @@ public class ConsentFormView extends LinearLayout {
      * @param initial quyet dinh khoi tao (vd lan truoc da luu); null = lay mac dinh cua config
      */
     public void bind(ConsentConfig config, @Nullable ConsentState initial) {
+        // Huỷ kết quả của lần tải đang dở.
+        loadGeneration++;
+        loading = false;
+        showState(contentView);
         this.config = config;
         this.state = ConsentState.merge(config, initial);
         holders.clear();
@@ -360,6 +566,7 @@ public class ConsentFormView extends LinearLayout {
             holders.add(holder);
             containerPurposes.addView(holder.root);
         }
+        setInputsEnabled(!submitting);
         refreshFromState();
     }
 
@@ -377,11 +584,25 @@ public class ConsentFormView extends LinearLayout {
         }
     }
 
-    /** Khoa nut + hien vong quay trong luc goi /sendData. */
+    /** Khoá form (cả các toggle) + hiện vòng quay trong lúc gọi /sendData. */
     public void setSubmitting(boolean submitting) {
+        this.submitting = submitting;
         progress.setVisibility(submitting ? VISIBLE : GONE);
         btnSubmit.setEnabled(!submitting);
         btnReject.setEnabled(!submitting);
+        setInputsEnabled(!submitting);
+    }
+
+    /** True khi đang gọi /sendData. */
+    public boolean isSubmitting() {
+        return submitting;
+    }
+
+    private void setInputsEnabled(boolean enabled) {
+        swAcceptAll.setEnabled(enabled);
+        for (PurposeHolder holder : holders) {
+            holder.setEnabled(enabled);
+        }
     }
 
     private void setListHidden(boolean hidden) {
@@ -545,6 +766,13 @@ public class ConsentFormView extends LinearLayout {
             toggle.setChecked(state.isGranted(item.key()));
             for (FieldHolder field : fields) {
                 field.syncFromState();
+            }
+        }
+
+        void setEnabled(boolean enabled) {
+            toggle.setEnabled(enabled);
+            for (FieldHolder field : fields) {
+                field.toggle.setEnabled(enabled);
             }
         }
     }

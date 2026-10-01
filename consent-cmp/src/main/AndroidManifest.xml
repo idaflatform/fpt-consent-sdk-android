@@ -4,4 +4,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <application>
+        <!-- Tự khởi tạo SDK từ <meta-data>; authority theo applicationId để không trùng giữa các app. -->
+        <provider
+            android:name="vn.fpt.fis.cmp.consent.ConsentInitProvider"
+            android:authorities="${applicationId}.cmp-init"
+            android:exported="false" />
+    </application>
+
 </manifest>
