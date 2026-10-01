@@ -17,4 +17,6 @@
     <string name="cmp_error_field_required">Trường bắt buộc của \"%1$s\": %2$s</string>
     <string name="cmp_error_generic">Không tải được cấu hình consent</string>
     <string name="cmp_close">Đóng</string>
+    <string name="cmp_error_no_config">Chưa tải được cấu hình consent, vui lòng thử lại</string>
+    <string name="cmp_error_not_initialized">SDK consent chưa được khởi tạo</string>
 </resources>

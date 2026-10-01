@@ -60,18 +60,45 @@ public final class ConsentCmp {
         this.store = new ConsentStore(this.appContext);
     }
 
-    /** Khoi tao SDK — goi mot lan trong {@code Application.onCreate()}. */
+    /**
+     * Khoi tao SDK bang code — goi mot lan trong {@code Application.onCreate()}.
+     *
+     * <p>Khong bat buoc neu app da khai {@code <meta-data>} (xem {@link ConsentInitProvider}). Goi
+     * bang code thi cau hinh nay thang cau hinh doc tu manifest.</p>
+     */
     public static ConsentCmp init(Context context, ConsentOptions options) {
         synchronized (ConsentCmp.class) {
+            ConsentCmp previous = instance;
             instance = new ConsentCmp(context, options);
+            if (previous != null) {
+                // Viec dang cho van chay xong, nhung khong nhan them viec moi -> khong ro thread.
+                previous.executor.shutdown();
+            }
             return instance;
+        }
+    }
+
+    /**
+     * Khoi tao tu {@code <meta-data>} — chi chay khi app chua tu {@link #init}.
+     *
+     * @return false khi da khoi tao truoc do (giu nguyen instance cu)
+     */
+    static boolean initIfAbsent(Context context, ConsentOptions options) {
+        synchronized (ConsentCmp.class) {
+            if (instance != null) {
+                return false;
+            }
+            instance = new ConsentCmp(context, options);
+            return true;
         }
     }
 
     public static ConsentCmp get() {
         ConsentCmp local = instance;
         if (local == null) {
-            throw new IllegalStateException("ConsentCmp.init(context, options) chua duoc goi");
+            throw new IllegalStateException("ConsentCmp chua duoc khoi tao: khai <meta-data android:name=\""
+                    + ConsentInitProvider.META_CODE_CONFIG + "\"> trong AndroidManifest.xml hoac goi "
+                    + "ConsentCmp.init(context, options)");
         }
         return local;
     }
@@ -140,7 +167,8 @@ public final class ConsentCmp {
                                 postSuccess(callback, config);
                                 return;
                             } catch (JSONException ignored) {
-                                store.clear();
+                                // Chi bo ban cache hong — khong duoc xoa quyet dinh consent da luu.
+                                store.clearConfigCache();
                             }
                         }
                     }
@@ -160,6 +188,10 @@ public final class ConsentCmp {
                     } else {
                         postError(callback, e);
                     }
+                } catch (RuntimeException e) {
+                    // Loi khong luong truoc (vd baseUrl sai scheme) khong duoc thoat khoi executor:
+                    // exception chua bat tren thread nen se lam crash app.
+                    postError(callback, new ConsentException("Khong tai duoc cau hinh consent", e));
                 }
             }
         });
@@ -201,6 +233,12 @@ public final class ConsentCmp {
         this.valueSource = source;
     }
 
+    /** Nguon gia tri da khai bang {@link #setValueSource} / {@link #bindForm}; null neu chua khai. */
+    @Nullable
+    public ConsentValueSource valueSource() {
+        return valueSource;
+    }
+
     /** Tien ich: quet truc tiep cay view cua form (input danh dau bang {@code android:tag}). */
     public void bindForm(android.view.View formRoot) {
         setValueSource(new vn.fpt.fis.cmp.consent.ui.ViewFormValueSource(formRoot));
@@ -212,10 +250,37 @@ public final class ConsentCmp {
      * <p>Purpose bat buoc chua dong y se bi chan ngay tai client (backend cung chan lan hai).
      * Moi lan goi sinh mot {@code consentId} moi; {@code visitorId} thi giu nguyen suot vong doi
      * cai dat app de CMP lien ket cac ban ghi cua cung mot nguoi dung.</p>
+     *
+     * <p>Kiem tra theo cau hinh tai gan nhat. Neu dang dung {@code ConsentFormView}, goi
+     * {@code form.submit(callback)} de SDK kiem tra dung cau hinh ma form dang hien.</p>
      */
-    public void submit(final ConsentState state, final ConsentCallback<SendConsentResult> callback) {
-        final ConsentConfig config = cachedConfig;
-        ConsentState.MissingRequired missing = state.firstMissing(config);
+    @MainThread
+    public void submit(ConsentState state, ConsentCallback<SendConsentResult> callback) {
+        submit(state, null, null, callback);
+    }
+
+    /**
+     * Nhu {@link #submit(ConsentState, ConsentCallback)} nhung chi ro cau hinh va nguon gia tri.
+     *
+     * @param config cau hinh ma {@code state} duoc dung tu (vd cau hinh form dang hien);
+     *               null = cau hinh tai gan nhat
+     * @param values nguon gia tri truong du lieu cho rieng lan gui nay;
+     *               null = nguon da khai bang {@link #setValueSource} / {@link #bindForm}
+     */
+    @MainThread
+    public void submit(final ConsentState state, @Nullable ConsentConfig config,
+                       @Nullable ConsentValueSource values,
+                       final ConsentCallback<SendConsentResult> callback) {
+        ConsentConfig active = config != null ? config : cachedConfig;
+        if (active == null) {
+            active = loadCachedConfig();
+        }
+        if (active == null) {
+            // Khong co cau hinh thi khong kiem tra duoc muc bat buoc -> khong gui.
+            postError(callback, new ConsentException(appContext.getString(R.string.cmp_error_no_config)));
+            return;
+        }
+        ConsentState.MissingRequired missing = state.firstMissing(active);
         if (missing != null) {
             String message = missing.field == null
                     ? appContext.getString(R.string.cmp_error_required, missing.item.label)
@@ -226,9 +291,13 @@ public final class ConsentCmp {
         }
         // Chi gui khoa co trong cau hinh dang dung: khoa cua ban cau hinh cu (purpose/truong da bi go)
         // khong duoc phep di kem request moi.
-        state.retainOnly(config);
+        state.retainOnly(active);
         // Lay gia tri tu form cua app tren main thread (doc View phai o main thread).
-        collectValues(state, config);
+        collectValues(state, active, values != null ? values : valueSource);
+        // display khong luu xuong storage -> ap lai theo cau hinh de truong an luon isAccept = false.
+        state.applyDisplay(active);
+        // Background thread chi doc ban sao: UI van co the doi state goc trong luc dang gui.
+        final ConsentState snapshot = state.copy();
         // Moi lan submit la mot ban ghi bang chung moi -> consentId luon sinh moi, khong tai su dung
         // id cua lan truoc (gui lai id cu se bi backend tu choi 409). Chi visitorId la giu nguyen.
         final String consentId = UUID.randomUUID().toString();
@@ -239,17 +308,32 @@ public final class ConsentCmp {
             public void run() {
                 try {
                     JSONObject body = ConsentJson.buildSendRequest(consentId, options.codeConfig,
-                            dateCreated, options.status, store.visitorId(), source(), state.toValues());
-                    SendConsentResult result = api.sendData(body);
-                    state.setConsentId(result.consentId != null ? result.consentId : consentId);
-                    state.setConfigCode(options.codeConfig);
-                    state.setSubmittedAtMs(System.currentTimeMillis());
-                    store.saveState(state);
-                    postSuccess(callback, result);
+                            dateCreated, options.status, store.visitorId(), source(), snapshot.toValues());
+                    final SendConsentResult result = api.sendData(body);
+                    final String savedId = result.consentId != null ? result.consentId : consentId;
+                    final long submittedAt = System.currentTimeMillis();
+                    snapshot.setConsentId(savedId);
+                    snapshot.setConfigCode(options.codeConfig);
+                    snapshot.setSubmittedAtMs(submittedAt);
+                    store.saveState(snapshot);
+                    main.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // State goc chi duoc ghi tren main thread.
+                            state.setConsentId(savedId);
+                            state.setConfigCode(options.codeConfig);
+                            state.setSubmittedAtMs(submittedAt);
+                            if (callback != null) {
+                                callback.onSuccess(result);
+                            }
+                        }
+                    });
                 } catch (ConsentException e) {
                     postError(callback, e);
                 } catch (JSONException e) {
                     postError(callback, new ConsentException("Khong dung duoc body sendData", e));
+                } catch (RuntimeException e) {
+                    postError(callback, new ConsentException("Khong gui duoc du lieu consent", e));
                 }
             }
         });
@@ -330,8 +414,7 @@ public final class ConsentCmp {
      * <p>Chi truong co {@code sharedWithSystem = true} moi duoc lay gia tri; doi chieu theo
      * {@code name} va {@code dataType} nen form cua app khong can biet id cua truong.</p>
      */
-    private void collectValues(ConsentState state, ConsentConfig config) {
-        ConsentValueSource source = valueSource;
+    private void collectValues(ConsentState state, ConsentConfig config, @Nullable ConsentValueSource source) {
         if (source == null || config == null) {
             return;
         }

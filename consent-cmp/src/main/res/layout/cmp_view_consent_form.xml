@@ -15,7 +15,67 @@
         android:textSize="@dimen/cmp_text_body"
         android:textStyle="bold" />
 
+    <!-- Trang thai dang tai /config (autoload / reload) -->
     <LinearLayout
+        android:id="@+id/cmp_form_state_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cmp_bg_card"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="32dp"
+            android:layout_height="32dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_md"
+            android:text="@string/cmp_loading"
+            android:textColor="@color/cmp_text_secondary"
+            android:textSize="@dimen/cmp_text_body" />
+    </LinearLayout>
+
+    <!-- Trang thai tai /config loi: thong bao + nut thu lai -->
+    <LinearLayout
+        android:id="@+id/cmp_form_state_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cmp_bg_card"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/cmp_form_tv_state_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/cmp_error_generic"
+            android:textColor="@color/cmp_error"
+            android:textSize="@dimen/cmp_text_body" />
+
+        <TextView
+            android:id="@+id/cmp_form_btn_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_md"
+            android:background="@drawable/cmp_bg_button_primary"
+            android:paddingStart="@dimen/cmp_space_lg"
+            android:paddingTop="@dimen/cmp_space_sm"
+            android:paddingEnd="@dimen/cmp_space_lg"
+            android:paddingBottom="@dimen/cmp_space_sm"
+            android:text="@string/cmp_retry"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/cmp_text_body" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/cmp_form_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/cmp_bg_card"

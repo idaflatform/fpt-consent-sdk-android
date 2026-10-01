@@ -119,6 +119,54 @@ public final class ConsentState implements Serializable {
         return state;
     }
 
+    /**
+     * Ban sao doc lap (deep copy) — dung de gui /sendData tren background thread trong khi UI van
+     * co the doi state goc, tranh doc/ghi dong thoi cung mot map.
+     */
+    public ConsentState copy() {
+        ConsentState copy = new ConsentState();
+        copy.purposes.putAll(purposes);
+        for (Map.Entry<String, Map<String, FieldDecision>> group : fields.entrySet()) {
+            Map<String, FieldDecision> groupCopy = new LinkedHashMap<>();
+            for (Map.Entry<String, FieldDecision> field : group.getValue().entrySet()) {
+                FieldDecision source = field.getValue();
+                FieldDecision decision = new FieldDecision(source.accepted, source.value);
+                decision.display = source.display;
+                groupCopy.put(field.getKey(), decision);
+            }
+            copy.fields.put(group.getKey(), groupCopy);
+        }
+        copy.extras.putAll(extras);
+        copy.consentId = consentId;
+        copy.configCode = configCode;
+        copy.submittedAtMs = submittedAtMs;
+        return copy;
+    }
+
+    /**
+     * Ap lai co {@code display} theo cau hinh cho moi truong co trong state.
+     *
+     * <p>{@code display} khong luu xuong storage, nen state doc tu {@link ConsentStore} hoac do app
+     * tu tao se coi moi truong la dang hien. Goi truoc khi submit de truong an chac chan
+     * {@code isAccept = false} (R16).</p>
+     */
+    public void applyDisplay(ConsentConfig config) {
+        if (config == null) {
+            return;
+        }
+        for (ConsentItem item : config.items()) {
+            Map<String, FieldDecision> group = fields.get(item.key());
+            if (group == null) {
+                continue;
+            }
+            for (ConsentField field : item.dataFields) {
+                if (group.containsKey(field.key())) {
+                    setFieldDisplay(item.key(), field.key(), field.display);
+                }
+            }
+        }
+    }
+
     /** Bo cac purpose / truong khong con trong cau hinh hien tai (khong them khoa moi). */
     public void retainOnly(ConsentConfig config) {
         if (config == null) {

@@ -15,5 +15,11 @@
           true             = chi hien o truong co sharedWithSystem = true.
         -->
         <attr name="cmpThirdPartiesOnSharedOnly" format="boolean" />
+        <!--
+          true  = view tu goi /config khi gan vao man hinh, tu hien trang thai dang tai / loi +
+                  nut "Thu lai" (goi lai bang reload()).
+          false = (mac dinh) app tu fetchConfig() roi bind(), nhu cac ban truoc.
+        -->
+        <attr name="cmpAutoLoad" format="boolean" />
     </declare-styleable>
 </resources>
