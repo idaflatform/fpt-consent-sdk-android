@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Vo bottom sheet: trang thai loading / loi / thu lai do ConsentFormView tu hien. -->
+<!-- Vỏ bottom sheet: trạng thái đang tải / lỗi / thử lại do ConsentFormView tự hiện. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

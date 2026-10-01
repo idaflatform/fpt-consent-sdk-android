@@ -61,14 +61,14 @@ public final class ConsentCmp {
     }
 
     /**
-     * Khoi tao SDK bang code; thang cau hinh {@code <meta-data>} (xem {@link ConsentInitProvider}).
+     * Khởi tạo SDK bằng code; thắng cấu hình {@code <meta-data>} (xem {@link ConsentInitProvider}).
      */
     public static ConsentCmp init(Context context, ConsentOptions options) {
         synchronized (ConsentCmp.class) {
             ConsentCmp previous = instance;
             instance = new ConsentCmp(context, options);
             if (previous != null) {
-                // Tranh ro thread cua instance cu.
+                // Tránh rò thread của instance cũ.
                 previous.executor.shutdown();
             }
             return instance;
@@ -76,7 +76,7 @@ public final class ConsentCmp {
     }
 
     /**
-     * Khoi tao tu {@code <meta-data>} neu chua khoi tao; tra false khi da co instance.
+     * Khởi tạo từ {@code <meta-data>} nếu chưa khởi tạo; trả false khi đã có instance.
      */
     static boolean initIfAbsent(Context context, ConsentOptions options) {
         synchronized (ConsentCmp.class) {
@@ -162,7 +162,7 @@ public final class ConsentCmp {
                                 postSuccess(callback, config);
                                 return;
                             } catch (JSONException ignored) {
-                                // Chi xoa cache, giu quyet dinh da luu.
+                                // Chỉ xoá cache, giữ quyết định đã lưu.
                                 store.clearConfigCache();
                             }
                         }
@@ -184,7 +184,7 @@ public final class ConsentCmp {
                         postError(callback, e);
                     }
                 } catch (RuntimeException e) {
-                    // Khong de exception thoat khoi executor (se crash app).
+                    // Không để exception thoát khỏi executor (sẽ crash app).
                     postError(callback, new ConsentException("Khong tai duoc cau hinh consent", e));
                 }
             }
@@ -227,7 +227,7 @@ public final class ConsentCmp {
         this.valueSource = source;
     }
 
-    /** Nguon gia tri da khai bang {@link #setValueSource} / {@link #bindForm}; null neu chua khai. */
+    /** Nguồn giá trị đã khai bằng {@link #setValueSource} / {@link #bindForm}; null nếu chưa khai. */
     @Nullable
     public ConsentValueSource valueSource() {
         return valueSource;
@@ -244,7 +244,7 @@ public final class ConsentCmp {
      * <p>Purpose bat buoc chua dong y se bi chan ngay tai client (backend cung chan lan hai).
      * Moi lan goi sinh mot {@code consentId} moi; {@code visitorId} thi giu nguyen suot vong doi
      * cai dat app de CMP lien ket cac ban ghi cua cung mot nguoi dung.</p>
-     * Dung {@code ConsentFormView} thi goi {@code form.submit(...)}.
+     * Dùng {@code ConsentFormView} thì gọi {@code form.submit(...)}.
      */
     @MainThread
     public void submit(ConsentState state, ConsentCallback<SendConsentResult> callback) {
@@ -252,10 +252,10 @@ public final class ConsentCmp {
     }
 
     /**
-     * Nhu {@link #submit(ConsentState, ConsentCallback)} nhung chi ro cau hinh va nguon gia tri.
+     * Như {@link #submit(ConsentState, ConsentCallback)} nhưng chỉ rõ cấu hình và nguồn giá trị.
      *
-     * @param config null = cau hinh tai gan nhat
-     * @param values null = nguon da khai bang {@link #setValueSource}
+     * @param config null = cấu hình tải gần nhất
+     * @param values null = nguồn đã khai bằng {@link #setValueSource}
      */
     @MainThread
     public void submit(final ConsentState state, @Nullable ConsentConfig config,
@@ -266,7 +266,7 @@ public final class ConsentCmp {
             active = loadCachedConfig();
         }
         if (active == null) {
-            // Khong co cau hinh thi khong kiem tra duoc bat buoc.
+            // Không có cấu hình thì không kiểm tra được mục bắt buộc.
             postError(callback, new ConsentException(appContext.getString(R.string.cmp_error_no_config)));
             return;
         }
@@ -284,9 +284,9 @@ public final class ConsentCmp {
         state.retainOnly(active);
         // Lay gia tri tu form cua app tren main thread (doc View phai o main thread).
         collectValues(state, active, values != null ? values : valueSource);
-        // Truong an luon isAccept = false (R16).
+        // Trường ẩn luôn isAccept = false (R16).
         state.applyDisplay(active);
-        // Thread nen chi doc ban sao.
+        // Thread nền chỉ đọc bản sao.
         final ConsentState snapshot = state.copy();
         // Moi lan submit la mot ban ghi bang chung moi -> consentId luon sinh moi, khong tai su dung
         // id cua lan truoc (gui lai id cu se bi backend tu choi 409). Chi visitorId la giu nguyen.
@@ -309,7 +309,7 @@ public final class ConsentCmp {
                     main.post(new Runnable() {
                         @Override
                         public void run() {
-                            // State goc chi duoc ghi tren main thread.
+                            // State gốc chỉ được ghi trên main thread.
                             state.setConsentId(savedId);
                             state.setConfigCode(options.codeConfig);
                             state.setSubmittedAtMs(submittedAt);

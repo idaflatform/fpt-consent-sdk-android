@@ -23,8 +23,8 @@ import vn.fpt.fis.cmp.consent.model.SendConsentResult;
 /**
  * Bottom sheet hien danh sach su dong y: tu goi /config khi mo, tu goi /sendData khi nguoi dung luu.
  *
- * <p>Mo bang {@link ConsentCmp#show} / {@link ConsentCmp#showIfNeeded}; tai, kiem tra va gui do
- * {@link ConsentFormView} lam.</p>
+ * <p>Mở bằng {@link ConsentCmp#show} / {@link ConsentCmp#showIfNeeded}; tải, kiểm tra và gửi do
+ * {@link ConsentFormView} làm.</p>
  */
 public class ConsentSheetFragment extends BottomSheetDialogFragment {
 
@@ -74,7 +74,7 @@ public class ConsentSheetFragment extends BottomSheetDialogFragment {
             }
         });
 
-        // Nut cua form tu kiem tra va gui.
+        // Nút của form tự kiểm tra và gửi.
         formView.setOnSubmitResultListener(new ConsentFormView.OnSubmitResultListener() {
             @Override
             public void onSubmitted(ConsentState state, SendConsentResult result) {

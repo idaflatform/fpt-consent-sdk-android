@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Tu khoi tao SDK tu {@code <meta-data>} {@value #META_CODE_CONFIG} / {@value #META_BASE_URL},
- * chay truoc {@code Application.onCreate()}. Khong khai codeConfig thi bo qua.
+ * Tự khởi tạo SDK từ {@code <meta-data>} {@value #META_CODE_CONFIG} / {@value #META_BASE_URL},
+ * chạy trước {@code Application.onCreate()}. Không khai codeConfig thì bỏ qua.
  */
 public final class ConsentInitProvider extends ContentProvider {
 
@@ -30,7 +30,7 @@ public final class ConsentInitProvider extends ContentProvider {
         if (context == null) {
             return false;
         }
-        // Chay tren main thread: khong goi mang, khong de loi lam crash app.
+        // Chạy trên main thread: không gọi mạng, không để lỗi làm crash app.
         try {
             Bundle meta = readMetaData(context);
             String codeConfig = string(meta, META_CODE_CONFIG);
@@ -59,9 +59,9 @@ public final class ConsentInitProvider extends ContentProvider {
         }
     }
 
-    /** Doc dang chuoi (aapt co the luu thanh so). */
+    /** Đọc dạng chuỗi (aapt có thể lưu thành số). */
     @Nullable
-    @SuppressWarnings("deprecation") // Bundle.get(String): can doc duoc moi kieu, khong chi String.
+    @SuppressWarnings("deprecation") // Bundle.get(String): cần đọc được mọi kiểu, không chỉ String.
     private static String string(@Nullable Bundle meta, String key) {
         if (meta == null) {
             return null;
@@ -74,7 +74,7 @@ public final class ConsentInitProvider extends ContentProvider {
         return text.isEmpty() ? null : text;
     }
 
-    // Khong phuc vu du lieu.
+    // Không phục vụ dữ liệu.
 
     @Nullable
     @Override

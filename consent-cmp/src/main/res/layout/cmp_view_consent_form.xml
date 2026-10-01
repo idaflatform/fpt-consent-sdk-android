@@ -15,7 +15,7 @@
         android:textSize="@dimen/cmp_text_body"
         android:textStyle="bold" />
 
-    <!-- Trang thai dang tai /config (autoload / reload) -->
+    <!-- Trạng thái đang tải /config (autoload / reload) -->
     <LinearLayout
         android:id="@+id/cmp_form_state_loading"
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
             android:textSize="@dimen/cmp_text_body" />
     </LinearLayout>
 
-    <!-- Trang thai tai /config loi: thong bao + nut thu lai -->
+    <!-- Trạng thái tải /config lỗi: thông báo + nút thử lại -->
     <LinearLayout
         android:id="@+id/cmp_form_state_error"
         android:layout_width="match_parent"

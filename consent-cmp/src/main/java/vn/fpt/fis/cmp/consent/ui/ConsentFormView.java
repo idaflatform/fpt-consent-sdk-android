@@ -70,13 +70,13 @@ public class ConsentFormView extends LinearLayout {
         void onStateChanged(ConsentState state, boolean allRequiredGranted);
     }
 
-    /** Ket qua khi view tu tai {@code /config} (autoload hoac {@link #reload()}). */
+    /** Kết quả khi view tự tải {@code /config} (autoload hoặc {@link #reload()}). */
     public interface OnLoadListener {
 
-        /** Da tai va ve xong form. */
+        /** Đã tải và vẽ xong form. */
         void onLoaded(ConsentConfig config);
 
-        /** Tai loi; view da hien nut "Thu lai". */
+        /** Tải lỗi; view đã hiện nút "Thử lại". */
         default void onLoadFailed(ConsentException error) {
         }
     }
@@ -108,12 +108,12 @@ public class ConsentFormView extends LinearLayout {
 
     /** Chan vong lap khi code tu set trang thai switch. */
     private boolean binding;
-    /** Dang goi /sendData — chan bam lap va khoa moi toggle. */
+    /** Đang gọi /sendData — chặn bấm lặp và khoá mọi toggle. */
     private boolean submitting;
-    /** true = tu goi /config khi gan vao man hinh. */
+    /** true = tự gọi /config khi gắn vào màn hình. */
     private boolean autoLoad;
     private boolean loading;
-    /** Bo qua callback cua lan tai cu. */
+    /** Bỏ qua callback của lần tải cũ. */
     private int loadGeneration;
     private boolean listHidden;
     private boolean allCollapsed;
@@ -269,7 +269,7 @@ public class ConsentFormView extends LinearLayout {
         this.submitResultListener = listener;
     }
 
-    /** Chuyen ket qua sang {@link OnSubmitResultListener}. */
+    /** Chuyển kết quả sang {@link OnSubmitResultListener}. */
     private ConsentCallback<SendConsentResult> resultNotifier() {
         return new ConsentCallback<SendConsentResult>() {
             @Override
@@ -288,24 +288,24 @@ public class ConsentFormView extends LinearLayout {
         };
     }
 
-    // ==================== Submit ====================
+    // ==================== Gửi dữ liệu ====================
 
     /**
-     * Kiem tra bat buoc, gui {@code /sendData}, hien loi tren form. Bam lap khi dang gui bi bo qua.
-     * Gia tri truong lay tu {@code ConsentCmp.setValueSource}/{@code bindForm}, khong co thi quet
-     * input co {@code android:tag} tren man hinh.
+     * Kiểm tra mục bắt buộc, gửi {@code /sendData}, hiện lỗi trên form. Bấm lặp khi đang gửi bị bỏ qua.
+     * Giá trị trường lấy từ {@code ConsentCmp.setValueSource}/{@code bindForm}, không có thì quét
+     * ô nhập có {@code android:tag} trên màn hình.
      */
     @MainThread
     public void submit(@Nullable ConsentCallback<SendConsentResult> callback) {
         submit(null, callback);
     }
 
-    /** Nhu {@link #submit(ConsentCallback)}, truyen thang gia tri truong cho lan gui nay. */
+    /** Như {@link #submit(ConsentCallback)}, truyền thẳng giá trị trường cho lần gửi này. */
     @MainThread
     public void submit(@Nullable ConsentValueSource values,
                        @Nullable final ConsentCallback<SendConsentResult> callback) {
         if (submitting) {
-            // Chan bam lap.
+            // Chặn bấm lặp.
             return;
         }
         if (!ConsentCmp.isInitialized()) {
@@ -327,7 +327,7 @@ public class ConsentFormView extends LinearLayout {
         }
         setError(null);
         setSubmitting(true);
-        // Kiem tra theo cau hinh form dang hien.
+        // Kiểm tra theo cấu hình form đang hiển thị.
         ConsentCmp.get().submit(state, config, source, new ConsentCallback<SendConsentResult>() {
             @Override
             public void onSuccess(SendConsentResult result) {
@@ -357,7 +357,7 @@ public class ConsentFormView extends LinearLayout {
         }
     }
 
-    /** Hien loi va cuon toi dong loi. */
+    /** Hiện lỗi và cuộn tới dòng lỗi. */
     private void showError(@Nullable CharSequence message) {
         setError(message);
         if (tvError.getVisibility() != VISIBLE) {
@@ -372,14 +372,14 @@ public class ConsentFormView extends LinearLayout {
         });
     }
 
-    // ==================== Tai cau hinh ====================
+    // ==================== Tải cấu hình ====================
 
-    /** Nhan ket qua khi view tu tai {@code /config}. */
+    /** Nhận kết quả khi view tự tải {@code /config}. */
     public void setOnLoadListener(@Nullable OnLoadListener listener) {
         this.loadListener = listener;
     }
 
-    /** Tuong duong {@code app:cmpAutoLoad}; bat khi view da hien thi thi tai ngay. */
+    /** Tương đương {@code app:cmpAutoLoad}; bật khi view đã hiển thị thì tải ngay. */
     public void setAutoLoad(boolean autoLoad) {
         this.autoLoad = autoLoad;
         if (autoLoad && isAttachedToWindow()) {
@@ -387,12 +387,12 @@ public class ConsentFormView extends LinearLayout {
         }
     }
 
-    /** True khi dang tai {@code /config}. */
+    /** True khi đang tải {@code /config}. */
     public boolean isLoading() {
         return loading;
     }
 
-    /** Tai lai {@code /config} roi ve lai form; loi thi hien nut "Thu lai". */
+    /** Tải lại {@code /config} rồi vẽ lại form; lỗi thì hiện nút "Thử lại". */
     @MainThread
     public void reload() {
         if (!ConsentCmp.isInitialized()) {
@@ -406,7 +406,7 @@ public class ConsentFormView extends LinearLayout {
             @Override
             public void onSuccess(ConsentConfig result) {
                 if (generation != loadGeneration) {
-                    // Ket qua cu, bo qua.
+                    // Kết quả cũ, bỏ qua.
                     return;
                 }
                 bind(result, ConsentCmp.get().savedState());
@@ -457,7 +457,7 @@ public class ConsentFormView extends LinearLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (loading) {
-            // Bo ket qua dang tai; gan lai thi tai lai.
+            // Bỏ kết quả đang tải; gắn lại thì tải lại.
             loadGeneration++;
             loading = false;
         }
@@ -535,7 +535,7 @@ public class ConsentFormView extends LinearLayout {
      * @param initial quyet dinh khoi tao (vd lan truoc da luu); null = lay mac dinh cua config
      */
     public void bind(ConsentConfig config, @Nullable ConsentState initial) {
-        // Huy ket qua cua lan tai dang do.
+        // Huỷ kết quả của lần tải đang dở.
         loadGeneration++;
         loading = false;
         showState(contentView);
@@ -584,7 +584,7 @@ public class ConsentFormView extends LinearLayout {
         }
     }
 
-    /** Khoa form (ca cac toggle) + hien vong quay trong luc goi /sendData. */
+    /** Khoá form (cả các toggle) + hiện vòng quay trong lúc gọi /sendData. */
     public void setSubmitting(boolean submitting) {
         this.submitting = submitting;
         progress.setVisibility(submitting ? VISIBLE : GONE);
@@ -593,7 +593,7 @@ public class ConsentFormView extends LinearLayout {
         setInputsEnabled(!submitting);
     }
 
-    /** True khi dang goi /sendData. */
+    /** True khi đang gọi /sendData. */
     public boolean isSubmitting() {
         return submitting;
     }

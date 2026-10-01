@@ -119,7 +119,7 @@ public final class ConsentState implements Serializable {
         return state;
     }
 
-    /** Ban sao doc lap, dung khi gui tren thread nen. */
+    /** Bản sao độc lập, dùng khi gửi trên thread nền. */
     public ConsentState copy() {
         ConsentState copy = new ConsentState();
         copy.purposes.putAll(purposes);
@@ -140,7 +140,7 @@ public final class ConsentState implements Serializable {
         return copy;
     }
 
-    /** Ap lai {@code display} theo cau hinh (khong luu xuong storage) de truong an luon tat (R16). */
+    /** Áp lại {@code display} theo cấu hình (không lưu xuống storage) để trường ẩn luôn tắt (R16). */
     public void applyDisplay(ConsentConfig config) {
         if (config == null) {
             return;
