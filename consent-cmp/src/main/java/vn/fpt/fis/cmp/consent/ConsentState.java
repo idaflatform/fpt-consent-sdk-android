@@ -119,10 +119,7 @@ public final class ConsentState implements Serializable {
         return state;
     }
 
-    /**
-     * Ban sao doc lap (deep copy) — dung de gui /sendData tren background thread trong khi UI van
-     * co the doi state goc, tranh doc/ghi dong thoi cung mot map.
-     */
+    /** Ban sao doc lap, dung khi gui tren thread nen. */
     public ConsentState copy() {
         ConsentState copy = new ConsentState();
         copy.purposes.putAll(purposes);
@@ -143,13 +140,7 @@ public final class ConsentState implements Serializable {
         return copy;
     }
 
-    /**
-     * Ap lai co {@code display} theo cau hinh cho moi truong co trong state.
-     *
-     * <p>{@code display} khong luu xuong storage, nen state doc tu {@link ConsentStore} hoac do app
-     * tu tao se coi moi truong la dang hien. Goi truoc khi submit de truong an chac chan
-     * {@code isAccept = false} (R16).</p>
-     */
+    /** Ap lai {@code display} theo cau hinh (khong luu xuong storage) de truong an luon tat (R16). */
     public void applyDisplay(ConsentConfig config) {
         if (config == null) {
             return;

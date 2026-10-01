@@ -73,10 +73,10 @@ public class ConsentFormView extends LinearLayout {
     /** Ket qua khi view tu tai {@code /config} (autoload hoac {@link #reload()}). */
     public interface OnLoadListener {
 
-        /** Da tai va ve xong form; app nen bat nut submit cua minh tu day. */
+        /** Da tai va ve xong form. */
         void onLoaded(ConsentConfig config);
 
-        /** Tai loi — view da tu hien thong bao + nut "Thu lai". */
+        /** Tai loi; view da hien nut "Thu lai". */
         default void onLoadFailed(ConsentException error) {
         }
     }
@@ -113,7 +113,7 @@ public class ConsentFormView extends LinearLayout {
     /** true = tu goi /config khi gan vao man hinh. */
     private boolean autoLoad;
     private boolean loading;
-    /** Tang moi lan tai moi / bind / detach de bo qua callback cua lan tai cu. */
+    /** Bo qua callback cua lan tai cu. */
     private int loadGeneration;
     private boolean listHidden;
     private boolean allCollapsed;
@@ -269,7 +269,7 @@ public class ConsentFormView extends LinearLayout {
         this.submitResultListener = listener;
     }
 
-    /** Callback cho nut cua SDK: chuyen ket qua sang {@link OnSubmitResultListener}. */
+    /** Chuyen ket qua sang {@link OnSubmitResultListener}. */
     private ConsentCallback<SendConsentResult> resultNotifier() {
         return new ConsentCallback<SendConsentResult>() {
             @Override
@@ -291,40 +291,21 @@ public class ConsentFormView extends LinearLayout {
     // ==================== Submit ====================
 
     /**
-     * Gui lua chon hien tai len {@code /sendData} — app chi can goi ham nay khi nguoi dung bam nut
-     * cua app.
-     *
-     * <p>SDK tu: kiem tra muc/truong bat buoc (thieu thi hien loi tren form va khong goi mang), lay
-     * gia tri truong du lieu, khoa form + hien vong quay trong luc gui, hien loi tren form neu gui
-     * that bai. Bam lap trong luc dang gui se bi bo qua.</p>
-     *
-     * <p>Gia tri truong du lieu lay tu nguon da khai bang {@code ConsentCmp.setValueSource} /
-     * {@code bindForm}; chua khai thi SDK tu quet cac input co {@code android:tag} tren cung man
-     * hinh voi view nay.</p>
-     *
-     * @param callback goi tren main thread; {@code onError} ca khi thieu muc bat buoc
+     * Kiem tra bat buoc, gui {@code /sendData}, hien loi tren form. Bam lap khi dang gui bi bo qua.
+     * Gia tri truong lay tu {@code ConsentCmp.setValueSource}/{@code bindForm}, khong co thi quet
+     * input co {@code android:tag} tren man hinh.
      */
     @MainThread
     public void submit(@Nullable ConsentCallback<SendConsentResult> callback) {
         submit(null, callback);
     }
 
-    /**
-     * Nhu {@link #submit(ConsentCallback)} nhung truyen thang gia tri truong du lieu cho lan gui nay.
-     *
-     * <pre>{@code
-     * form.submit(new MapValueSource()
-     *         .put("full_name", edtName.getText().toString())
-     *         .put("email", "EMAIL", edtEmail.getText().toString()), callback);
-     * }</pre>
-     *
-     * @param values null = nguon mac dinh (xem {@link #submit(ConsentCallback)})
-     */
+    /** Nhu {@link #submit(ConsentCallback)}, truyen thang gia tri truong cho lan gui nay. */
     @MainThread
     public void submit(@Nullable ConsentValueSource values,
                        @Nullable final ConsentCallback<SendConsentResult> callback) {
         if (submitting) {
-            // Chan double-submit: moi lan gui la mot ban ghi bang chung moi.
+            // Chan bam lap.
             return;
         }
         if (!ConsentCmp.isInitialized()) {
@@ -346,7 +327,7 @@ public class ConsentFormView extends LinearLayout {
         }
         setError(null);
         setSubmitting(true);
-        // Kiem tra theo dung cau hinh form dang hien, khong theo cau hinh tai gan nhat cua SDK.
+        // Kiem tra theo cau hinh form dang hien.
         ConsentCmp.get().submit(state, config, source, new ConsentCallback<SendConsentResult>() {
             @Override
             public void onSuccess(SendConsentResult result) {
@@ -376,7 +357,7 @@ public class ConsentFormView extends LinearLayout {
         }
     }
 
-    /** Hien loi va cuon toi dong loi de nguoi dung thay ngay. */
+    /** Hien loi va cuon toi dong loi. */
     private void showError(@Nullable CharSequence message) {
         setError(message);
         if (tvError.getVisibility() != VISIBLE) {
@@ -398,12 +379,7 @@ public class ConsentFormView extends LinearLayout {
         this.loadListener = listener;
     }
 
-    /**
-     * Bat/tat tu tai {@code /config} khi view gan vao man hinh.
-     *
-     * <p>Tuong duong thuoc tinh XML {@code app:cmpAutoLoad}. Bat sau khi view da gan vao man hinh
-     * thi tai ngay.</p>
-     */
+    /** Tuong duong {@code app:cmpAutoLoad}; bat khi view da hien thi thi tai ngay. */
     public void setAutoLoad(boolean autoLoad) {
         this.autoLoad = autoLoad;
         if (autoLoad && isAttachedToWindow()) {
@@ -416,12 +392,7 @@ public class ConsentFormView extends LinearLayout {
         return loading;
     }
 
-    /**
-     * Tai lai {@code /config} (luon goi mang, mat mang thi dung ban cache cu) roi ve lai form.
-     *
-     * <p>Trong luc tai hien trang thai "Dang tai"; loi thi hien thong bao + nut "Thu lai" (bam de goi
-     * lai ham nay). Lua chon da luu truoc do duoc gop vao cau hinh moi.</p>
-     */
+    /** Tai lai {@code /config} roi ve lai form; loi thi hien nut "Thu lai". */
     @MainThread
     public void reload() {
         if (!ConsentCmp.isInitialized()) {
@@ -435,7 +406,7 @@ public class ConsentFormView extends LinearLayout {
             @Override
             public void onSuccess(ConsentConfig result) {
                 if (generation != loadGeneration) {
-                    // View da detach, da bind tay, hoac da co lan tai moi hon.
+                    // Ket qua cu, bo qua.
                     return;
                 }
                 bind(result, ConsentCmp.get().savedState());
@@ -486,7 +457,7 @@ public class ConsentFormView extends LinearLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (loading) {
-            // Bo ket qua cua lan tai dang do; gan lai vao man hinh thi autoload tai lai.
+            // Bo ket qua dang tai; gan lai thi tai lai.
             loadGeneration++;
             loading = false;
         }
@@ -564,7 +535,7 @@ public class ConsentFormView extends LinearLayout {
      * @param initial quyet dinh khoi tao (vd lan truoc da luu); null = lay mac dinh cua config
      */
     public void bind(ConsentConfig config, @Nullable ConsentState initial) {
-        // bind tay thang lan tai dang do (neu co): ket qua tai ve sau se bi bo qua.
+        // Huy ket qua cua lan tai dang do.
         loadGeneration++;
         loading = false;
         showState(contentView);
@@ -613,11 +584,7 @@ public class ConsentFormView extends LinearLayout {
         }
     }
 
-    /**
-     * Khoa form + hien vong quay trong luc goi /sendData.
-     *
-     * <p>Khoa ca cac toggle: lua chon khong duoc doi giua chung khi ban ghi dang duoc gui.</p>
-     */
+    /** Khoa form (ca cac toggle) + hien vong quay trong luc goi /sendData. */
     public void setSubmitting(boolean submitting) {
         this.submitting = submitting;
         progress.setVisibility(submitting ? VISIBLE : GONE);

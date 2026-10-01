@@ -5,11 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application>
-        <!--
-          Tu khoi tao SDK tu <meta-data android:name="vn.fpt.cmp.codeConfig" ...> cua app.
-          Authority gan theo applicationId de nhieu app cung dung SDK van cai chung may duoc.
-          App muon tat: khai lai provider nay voi tools:node="remove".
-        -->
+        <!-- Tu khoi tao SDK tu <meta-data>; authority theo applicationId de khong trung giua cac app. -->
         <provider
             android:name="vn.fpt.fis.cmp.consent.ConsentInitProvider"
             android:authorities="${applicationId}.cmp-init"

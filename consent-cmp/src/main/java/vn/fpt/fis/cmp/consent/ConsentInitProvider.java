@@ -14,22 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Tu khoi tao SDK tu {@code <meta-data>} trong {@code AndroidManifest.xml} cua app.
- *
- * <p>Manifest merger tu chen provider nay vao app; Android chay {@link #onCreate()} truoc
- * {@code Application.onCreate()}, nen app chi can khai:</p>
- *
- * <pre>{@code
- * <application ...>
- *     <meta-data android:name="vn.fpt.cmp.codeConfig" android:value="cp_xxx::t_yyy" />
- *     <!-- tuy chon, mac dinh PROD -->
- *     <meta-data android:name="vn.fpt.cmp.baseUrl" android:value="https://uat-cmp.biznext.vn" />
- * </application>
- * }</pre>
- *
- * <p>Khong khai {@code codeConfig} thi provider khong lam gi — app van goi
- * {@link ConsentCmp#init} bang code duoc, va cau hinh bang code luon thang cau hinh manifest.
- * Tat han provider bang {@code tools:node="remove"}.</p>
+ * Tu khoi tao SDK tu {@code <meta-data>} {@value #META_CODE_CONFIG} / {@value #META_BASE_URL},
+ * chay truoc {@code Application.onCreate()}. Khong khai codeConfig thi bo qua.
  */
 public final class ConsentInitProvider extends ContentProvider {
 
@@ -44,8 +30,7 @@ public final class ConsentInitProvider extends ContentProvider {
         if (context == null) {
             return false;
         }
-        // Chay tren main thread truoc Application.onCreate(): chi doc meta-data, khong goi mang.
-        // Moi loi deu nuot: provider cua SDK khong duoc lam app crash luc khoi dong.
+        // Chay tren main thread: khong goi mang, khong de loi lam crash app.
         try {
             Bundle meta = readMetaData(context);
             String codeConfig = string(meta, META_CODE_CONFIG);
@@ -74,7 +59,7 @@ public final class ConsentInitProvider extends ContentProvider {
         }
     }
 
-    /** Doc gia tri dang chuoi — aapt co the luu gia tri trong giong so thanh int/float. */
+    /** Doc dang chuoi (aapt co the luu thanh so). */
     @Nullable
     @SuppressWarnings("deprecation") // Bundle.get(String): can doc duoc moi kieu, khong chi String.
     private static String string(@Nullable Bundle meta, String key) {
@@ -89,7 +74,7 @@ public final class ConsentInitProvider extends ContentProvider {
         return text.isEmpty() ? null : text;
     }
 
-    // Provider chi dung de chay code khoi tao, khong phuc vu du lieu.
+    // Khong phuc vu du lieu.
 
     @Nullable
     @Override
