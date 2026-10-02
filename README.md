@@ -8,12 +8,12 @@ Cần 2 thông tin:
 
 | Thông tin | Ví dụ |
 |---|---|
-| Dependency | `io.github.idaflatform:fpt-consent-sdk:<version>` |
+| Dependency | `io.github.idaflatform:fpt-consent-sdk:1.1.0` |
 | `codeConfig` (integration key của Collection Point) | `cp_xxx::t_yyy` |
 
-> **Phiên bản.** Các bước dưới đây dùng 3 tính năng mới: **tự khởi tạo từ `<meta-data>`**, **tự tải cấu
-> hình (`cmpAutoLoad`) + `reload()`**, và **`form.submit(...)`**. Chúng có từ bản kế tiếp sau `1.0.2`
-> (dự kiến `1.1.0`). Đang dùng `1.0.x`? Xem [Nâng cấp từ 1.0.x](#nâng-cấp-từ-10x).
+> **Phiên bản hiện tại: `1.1.0`.** Các bước dưới đây dùng 3 tính năng có từ `1.1.0`: **tự khởi tạo từ
+> `<meta-data>`**, **tự tải cấu hình (`cmpAutoLoad`) + `reload()`**, và **`form.submit(...)`**.
+> Đang dùng `1.0.x`? Xem [Nâng cấp từ 1.0.x](#nâng-cấp-từ-10x).
 
 ## SDK làm gì
 
@@ -89,7 +89,7 @@ Nexus làm mirror, khai thêm URL mirror đó theo hướng dẫn nội bộ —
 
 ```groovy
 dependencies {
-    implementation 'io.github.idaflatform:fpt-consent-sdk:<version>'
+    implementation 'io.github.idaflatform:fpt-consent-sdk:1.1.0'
 }
 ```
 
@@ -97,7 +97,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    implementation("io.github.idaflatform:fpt-consent-sdk:<version>")
+    implementation("io.github.idaflatform:fpt-consent-sdk:1.1.0")
 }
 ```
 
