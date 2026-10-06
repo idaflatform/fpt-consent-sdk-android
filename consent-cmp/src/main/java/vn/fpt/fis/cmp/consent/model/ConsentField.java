@@ -45,9 +45,9 @@ public final class ConsentField implements Serializable {
         this.display = display;
     }
 
-    /** Nhan hien thi: uu tien {@code title}, fallback {@code name}. */
+    /** Nhan hien thi: uu tien {@code name}, fallback {@code title}. */
     public String displayName() {
-        return title != null && title.length() > 0 ? title : name;
+        return name != null && name.length() > 0 ? name : title;
     }
 
     /** Khoa gui len /sendData — la {@code id} cua truong (fallback {@code name} khi thieu id). */
