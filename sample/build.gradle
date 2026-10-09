@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.application'
+}
+
+// codeConfig / baseUrl doc tu local.properties (da gitignore) — khong commit integration key:
+//   cmp.codeConfig=cp_xxx::t_yyy
+//   cmp.baseUrl=https://cmp.biznext.vn
+def localProps = new Properties()
+def localPropsFile = rootProject.file('local.properties')
+if (localPropsFile.exists()) {
+    localPropsFile.withInputStream { localProps.load(it) }
+}
+
+android {
+    namespace 'vn.fpt.fis.cmp.sample'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'vn.fpt.fis.cmp.sample'
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+
+        // SDK tu khoi tao tu <meta-data> trong AndroidManifest.xml.
+        manifestPlaceholders = [
+                cmpCodeConfig: localProps.getProperty('cmp.codeConfig', ''),
+                cmpBaseUrl   : localProps.getProperty('cmp.baseUrl', ''),
+        ]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Chua co keystore rieng: ky bang debug key de cai thu duoc. Khong dua len store.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(':consent-cmp')
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.11.0'
+}

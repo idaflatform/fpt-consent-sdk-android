@@ -19,9 +19,10 @@ android {
         }
     }
 
+    // Bytecode Java 11 (khong phai 17) de app dung AGP / D8 cu van dex duoc thu vien.
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     // KHONG khai android.publishing.singleVariant('release') o day: plugin
@@ -38,6 +39,9 @@ dependencies {
     implementation 'androidx.core:core:1.13.1'
     // BottomSheetDialogFragment + SwitchMaterial
     implementation 'com.google.android.material:material:1.11.0'
+
+    // ConsentStateTest chay tren JVM; truoc day thieu nen test khong bien dich duoc.
+    testImplementation 'junit:junit:4.13.2'
 }
 
 mavenPublishing {

@@ -106,6 +106,15 @@ cần khai lại. Nếu app đã dùng phiên bản cao hơn thì Gradle giữ b
 
 ## Bước 3. Kiểm tra cấu hình module app
 
+Yêu cầu tối thiểu với project app:
+
+| Mục | Tối thiểu | Lý do |
+|---|---|---|
+| `minSdk` | 21 | |
+| `compileSdk` | **34** | `androidx.fragment 1.8.2`, `appcompat 1.7.0`, `core 1.13.1` khai `minCompileSdk=34` — thấp hơn thì build lỗi `checkDebugAarMetadata` |
+| Android Gradle Plugin | 8.1.1 | bản thấp nhất hỗ trợ chính thức `compileSdk 34` |
+| `compileOptions` của app | Java 8 / 11 / 17 đều được | SDK biên dịch ra bytecode Java 11 |
+
 `app/build.gradle` (Groovy):
 
 ```groovy
@@ -296,7 +305,8 @@ vẫn được gọi, app kiểm tra `config.isActive()` để quyết định c
 | | Màn hình **không** phải form | Màn hình **là** form của app |
 |---|---|---|
 | Khai báo | mặc định, không cần khai gì | `app:cmpEmbeddedInForm="true"` |
-| Nút "Từ chối tất cả" / "Đồng ý" của SDK | **hiện** | **ẩn** |
+| Chân khối "x / N mục đích đã chọn" + nút gửi của SDK | **hiện** | **ẩn** |
+| Danh sách mục đích | mở sẵn | thu gọn sau nút "Xem N mục đích" |
 | Ai gửi `/sendData` | **SDK tự gửi** khi người dùng bấm nút | **app gọi** `form.submit(...)` — Bước 6 |
 | Nhận kết quả | `form.setOnSubmitResultListener(...)` | callback của `form.submit(...)` |
 
@@ -492,6 +502,22 @@ ConsentCmp.get().fetchConfig(object : ConsentCallback<ConsentConfig> {
 
 ---
 
+## Nhúng trong Flutter / React Native
+
+SDK chưa có plugin riêng; app bọc `ConsentFormView` thành platform view / native component:
+
+- Tạo view bằng code: `setEmbeddedInForm(true)` + `setAutoLoad(true)` (không có XML để khai thuộc tính).
+- Chiều cao: `ConsentFormView` là `wrap_content` và đổi cao khi tải xong / mở-thu gọn một mục — tự đo
+  (`measure` với `UNSPECIFIED`) rồi báo về phía Dart / JS.
+- Gửi: nút của app gọi `form.submit(values, callback)`; kiểm tra `form.isSubmitting()` trước để cầu
+  nối không chờ một callback sẽ không đến.
+- Từ `1.1.1` SDK không dùng ripple trên Android < 8.0, vì Android 7.x abort RenderThread khi ripple chạy
+  trong platform view chế độ texture (lỗi `Trying to start new animators on RippleDrawable without an
+  animation handle`). Đang dùng bản cũ hơn trên Flutter thì tạo view bằng hybrid composition
+  (`PlatformViewLink` + `initExpensiveAndroidView`) thay cho `AndroidView`.
+- Bottom sheet (`show` / `showIfNeeded`) cần `FragmentActivity`: Flutter phải đổi `FlutterActivity` thành
+  `FlutterFragmentActivity`.
+
 ## Lỗi thường gặp
 
 | Lỗi | Nguyên nhân | Xử lý |
@@ -521,7 +547,9 @@ nhưng app nên hiểu để không thấy lạ:
 | Mục đích `required = true` | bật sẵn khi mở; người dùng tắt thì tự bật lại kèm thông báo |
 | Mục đích chứa trường `required = true` (đang hiển thị) | cũng **không tắt được** — về "trạng thái tối thiểu": mục đích bật, chỉ trường bắt buộc bật |
 | Trường `required = true`, mục đích cha đang bật | không tắt riêng được; tắt thì tự bật lại kèm thông báo |
-| "Từ chối tất cả" khi còn mục bắt buộc | tắt hết phần còn lại, giữ phần bắt buộc ở mức tối thiểu, hiện lý do |
+| Tắt "Đồng ý tất cả" khi còn mục bắt buộc | tắt hết phần còn lại, giữ phần bắt buộc ở mức tối thiểu, hiện lý do |
+| Chọn 1 trường của mục đích đang tắt | mục đích bật theo (chỉ trường vừa chọn + trường bắt buộc) |
+| Bỏ chọn hết trường của mục đích không bắt buộc | mục đích tắt theo |
 | `form.submit(...)` khi còn mục bắt buộc chưa bật | lỗi hiện trên form, **không gọi mạng**; backend chặn lần hai |
 
 Mặc định khi mở màn hình: chỉ mục/trường `required` (và mục đích `defaultChecked`) bật sẵn, còn lại tắt.
@@ -558,8 +586,21 @@ Người dùng đã trả lời trước đó thì form hiện lại lựa chọ
 | — | `validateRequired()` / `requiredMessage()` | tự kiểm tra bắt buộc (không cần nếu dùng `submit`) |
 | — | `setOnSubmitResultListener(...)` | nhận kết quả khi SDK tự gửi (màn hình không phải form) |
 | — | `bind(config, state)` | tự dựng form khi không dùng autoload |
-| `app:cmpThirdPartiesOnSharedOnly="true"` | `setThirdPartiesOnSharedOnly(true)` | chỉ hiện chip bên thứ ba ở trường được chia sẻ |
-| `app:cmpShowSectionTitle="false"` | `setSectionTitleVisible(false)` | ẩn dòng tiêu đề nhỏ phía trên |
+| `app:cmpThirdPartiesOnSharedOnly="true"` | `setThirdPartiesOnSharedOnly(true)` | chỉ hiện "Chia sẻ với" khi mục đích có trường được chia sẻ |
+| `app:cmpShowSectionTitle="true"` | `setSectionTitleVisible(true)` | hiện dòng tiêu đề nhỏ phía trên thẻ (từ `1.2.0` mặc định ẩn) |
+
+### Giao diện (từ `1.2.0`)
+
+Dạng accordion — mỗi lúc mở 1 mục đích; tự đổi theo **độ rộng của chính view**:
+
+| Độ rộng view | Trường dữ liệu | "Đồng ý tất cả" | Số trường đã chọn |
+|---|---|---|---|
+| < 560dp (điện thoại) | chip bật/tắt có dấu ✓ | 1 hàng riêng | "Trường dữ liệu · 5/8" |
+| ≥ 560dp (tablet, điện thoại xoay ngang) | checkbox 2 cột | cạnh tiêu đề | "5/8" trên hàng tiêu đề mục |
+
+Màu chính `@color/cmp_primary` (`#146052`); ghi đè các màu `cmp_*` trong `res/values` của app để đổi
+theme. Không dùng ripple ở các nút của form trên Android &lt; 8.0 (xem mục Flutter / React Native).
+`OnActionListener.onRejectAll` không còn được gọi — tắt "Đồng ý tất cả" rồi lưu là từ chối.
 
 ## Nâng cấp version SDK
 

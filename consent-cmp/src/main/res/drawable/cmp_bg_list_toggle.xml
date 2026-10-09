@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nut "Xem N muc dich": doi mau khi bam, khong ripple. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" android:drawable="@color/cmp_border" />
+    <item android:drawable="@color/cmp_surface" />
+</selector>

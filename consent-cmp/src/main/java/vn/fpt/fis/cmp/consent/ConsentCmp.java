@@ -6,6 +6,7 @@ import android.os.Looper;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 import androidx.fragment.app.FragmentManager;
 
 import org.json.JSONException;
@@ -359,6 +360,19 @@ public final class ConsentCmp {
     @Nullable
     public ConsentListener listener() {
         return listener;
+    }
+
+    /**
+     * Bo listener khi bottom sheet da dong han, de singleton khong giu Activity cua app (listener
+     * thuong la anonymous class tro toi Activity). Chi bo khi van la listener do — app co the da
+     * goi {@link #show} lai voi listener moi.
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @MainThread
+    public void releaseListener(@Nullable ConsentListener expected) {
+        if (listener == expected) {
+            listener = null;
+        }
     }
 
     // ==================== Trang thai da luu ====================
