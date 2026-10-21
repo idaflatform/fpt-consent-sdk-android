@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><TargetFramework>net9.0-android</TargetFramework><SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion><IsBindingProject>true</IsBindingProject><Nullable>enable</Nullable></PropertyGroup>
+ <ItemGroup>
+  <AndroidLibrary Include="$(CmpBridgeAar)" />
+  <AndroidLibrary Include="$(CmpSdkAar)" Bind="false" />
+  <PackageReference Include="Xamarin.Google.Android.Material" Version="1.11.0.1" />
+ </ItemGroup>
+ <Target Name="CheckArtifacts" BeforeTargets="PrepareForBuild"><Error Condition="!Exists('$(CmpBridgeAar)') Or !Exists('$(CmpSdkAar)')" Text="Set CmpBridgeAar and CmpSdkAar to packaged release AAR files." /></Target>
+</Project>

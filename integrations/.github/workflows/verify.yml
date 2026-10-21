@@ -1,0 +1,49 @@
+name: Integration verification
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  portable:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --test tools/fixture-server.test.mjs
+      - run: node tools/verify-structure.mjs
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '17'}
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: subosito/flutter-action@v2
+        with: {flutter-version: '3.35.7', channel: stable, cache: true}
+      - name: Require an accessible packaged SDK
+        env:
+          CMP_MAVEN_REPO: ${{ vars.CMP_MAVEN_REPO }}
+        run: |
+          chmod +x android/gradlew
+          android/gradlew -p android :java-example:assembleDebug :compose-example:assembleDebug :java-example:assembleRelease :compose-example:assembleRelease :mobile-bridge:testDebugUnitTest :mobile-bridge:publishReleasePublicationToIntegrationRepository
+      - working-directory: packages/flutter
+        run: flutter pub get && flutter analyze && flutter test
+      - working-directory: packages/flutter/example
+        env:
+          CMP_MAVEN_REPO: ${{ vars.CMP_MAVEN_REPO }}
+        run: flutter pub get && flutter test && flutter build apk --debug && flutter build apk --release
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Native example generation and build
+        run: |
+          brew install xcodegen
+          cd ios/Examples
+          xcodegen generate
+          for scheme in SwiftUIExample UIKitExample ObjectiveCExample; do
+            xcodebuild -project CMPExamples.xcodeproj -scheme "$scheme" -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build
+          done
+      - uses: subosito/flutter-action@v2
+        with: {flutter-version: '3.35.7', channel: stable, cache: true}
+      - working-directory: packages/flutter/example
+        run: flutter pub get && flutter build ios --simulator --debug

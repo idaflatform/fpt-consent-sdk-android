@@ -1,0 +1,17 @@
+**/build/
+**/.gradle/
+**/.dart_tool/
+**/node_modules/
+**/Pods/
+**/local.properties
+**/.flutter-plugins-dependencies
+**/pubspec.lock
+**/.swiftpm/
+**/DerivedData/
+.env
+*.xcuserstate
+test-results/
+*.log
+**/*.inspect.ndjson
+ios/Examples/CMPExamples.xcodeproj/
+ios/Frameworks/CMPFrameworks.xcodeproj/

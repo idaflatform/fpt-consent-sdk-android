@@ -1,0 +1,47 @@
+name: CMPExamples
+options:
+  deploymentTarget:
+    iOS: '14.0'
+packages:
+  CMPMobileBridge:
+    path: ../Bridge
+  ConsentCmp:
+    url: https://github.com/idaflatform/fpt-consent-sdk-ios.git
+    from: 1.1.0
+targets:
+  ObjectiveCExample:
+    type: application
+    platform: iOS
+    sources: [ObjectiveC]
+    dependencies:
+      - package: CMPMobileBridge
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.fpt.cmp.example.objc
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        CLANG_ENABLE_MODULES: YES
+  SwiftUIExample:
+    type: application
+    platform: iOS
+    sources: [SwiftUI]
+    dependencies:
+      - package: ConsentCmp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.fpt.cmp.example.swiftui
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        SWIFT_VERSION: '5.0'
+  UIKitExample:
+    type: application
+    platform: iOS
+    sources: [UIKit]
+    dependencies:
+      - package: ConsentCmp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.fpt.cmp.example.uikit
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        SWIFT_VERSION: '5.0'
