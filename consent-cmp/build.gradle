@@ -25,6 +25,10 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+
     // KHONG khai android.publishing.singleVariant('release') o day: plugin
     // com.vanniktech.maven.publish da tu khai (kem sources jar + javadoc jar ma Maven Central
     // bat buoc). Khai lai se loi "Using singleVariant publishing DSL multiple times".
@@ -42,6 +46,7 @@ dependencies {
 
     // ConsentStateTest chay tren JVM; truoc day thieu nen test khong bien dich duoc.
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.14.1'
 }
 
 mavenPublishing {

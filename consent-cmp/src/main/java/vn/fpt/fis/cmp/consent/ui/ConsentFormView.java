@@ -155,6 +155,7 @@ public class ConsentFormView extends LinearLayout {
     private boolean thirdPartiesOnSharedOnly;
     /** Bo cuc man rong (>= cmp_wide_min_width). */
     private boolean wide;
+    private boolean compact;
     /** Accordion: key muc dang mo; null = khong mo muc nao. */
     @Nullable
     private String openKey;
@@ -533,19 +534,22 @@ public class ConsentFormView extends LinearLayout {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        final boolean shouldBeWide =
-                w >= getResources().getDimensionPixelSize(R.dimen.cmp_wide_min_width);
-        if (shouldBeWide != wide) {
-            // Doi bo cuc ngoai luot layout hien tai.
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    setWideLayout(shouldBeWide);
-                }
-            });
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED) {
+            int available = Math.max(0, MeasureSpec.getSize(widthMeasureSpec)
+                    - getPaddingLeft() - getPaddingRight());
+            boolean shouldBeWide = available >= getResources().getDimensionPixelSize(
+                    R.dimen.cmp_wide_min_width);
+            boolean shouldBeCompact = available < getResources().getDimensionPixelSize(
+                    R.dimen.cmp_compact_min_width);
+            if (shouldBeWide != wide || shouldBeCompact != compact) {
+                wide = shouldBeWide;
+                compact = shouldBeCompact;
+                // Apply before measuring so embedded hosts receive the height of the final layout.
+                applyLayoutMode();
+            }
         }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     public void setOnActionListener(@Nullable OnActionListener listener) {
@@ -727,9 +731,9 @@ public class ConsentFormView extends LinearLayout {
         }
     }
 
-    private void setWideLayout(boolean wide) {
-        this.wide = wide;
-        applyLayoutMode();
+    private void textSize(TextView view, int regular, int small) {
+        view.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimension(compact ? small : regular));
     }
 
     /** Dat bo cuc hep / rong cho phan khung; tung muc tu ve lai theo {@link #wide}. */
@@ -760,16 +764,25 @@ public class ConsentFormView extends LinearLayout {
             masterView.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.cmp_touch));
             masterView.setPadding(dp(16), 0, dp(16), 0);
             tvAcceptAll.setTextColor(color(R.color.cmp_text_primary));
-            tvAcceptAll.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimension(R.dimen.cmp_text_purpose));
+            textSize(tvAcceptAll, R.dimen.cmp_text_purpose, R.dimen.cmp_text_purpose_compact);
         }
         masterView.setLayoutParams(masterLp);
         tvAcceptAll.setLayoutParams(labelLp);
         masterSlot.setVisibility(wide ? GONE : VISIBLE);
 
-        int side = wide ? dp(20) : dp(16);
+        int side = dp(wide ? 20 : compact ? 12 : 16);
         headerRow.setPadding(side, wide ? dp(18) : dp(14), side, wide ? dp(14) : dp(12));
-        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, wide ? 20 : 16);
+        if (wide) {
+            tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        } else {
+            textSize(tvTitle, R.dimen.cmp_text_title, R.dimen.cmp_text_title_compact);
+            masterView.setPadding(side, 0, side, 0);
+        }
+        textSize(tvDescription, R.dimen.cmp_text_small, R.dimen.cmp_text_small_compact);
+        for (TextView text : new TextView[]{tvSection, tvError, tvSummary, tvToggleList,
+                btnSubmit, tvErrorState}) {
+            textSize(text, R.dimen.cmp_text_body, R.dimen.cmp_text_body_compact);
+        }
 
         // Man rong (thiet ke tablet): the nen xam, danh sach la khung trang rieng, chan khoi nen
         // trang; card khong ke duong giua cac khoi.
@@ -1011,6 +1024,20 @@ public class ConsentFormView extends LinearLayout {
         /** Ve lai theo state + che do hep/rong + dang mo hay dong. */
         void render() {
             boolean open = isOpen();
+            TextView label = root.findViewById(R.id.cmp_tv_purpose_label);
+            textSize(label, R.dimen.cmp_text_purpose, R.dimen.cmp_text_purpose_compact);
+            for (TextView text : new TextView[]{subtitle, counter, description, btnShowMore,
+                    fieldsCount, btnSelectAll}) {
+                textSize(text, R.dimen.cmp_text_small, R.dimen.cmp_text_small_compact);
+            }
+            for (int i = 0; i < parties.getChildCount(); i++) {
+                textSize((TextView) parties.getChildAt(i),
+                        R.dimen.cmp_text_chip, R.dimen.cmp_text_chip_compact);
+            }
+            ViewGroup.LayoutParams chevronLp = chevron.getLayoutParams();
+            chevronLp.width = dp(compact ? 32 : 40);
+            chevron.setLayoutParams(chevronLp);
+            subtitle.setMaxLines(compact ? 2 : 1);
             boolean wasBinding = binding;
             binding = true;
             toggle.setChecked(state.isGranted(item.key()));
@@ -1133,6 +1160,7 @@ public class ConsentFormView extends LinearLayout {
 
         void render() {
             boolean checked = state.isFieldGranted(purposeKey, fieldKey);
+            textSize(view, R.dimen.cmp_text_body, R.dimen.cmp_text_body_compact);
             view.setChecked(checked);
             if (wide) {
                 view.setBackground(null);
@@ -1146,7 +1174,7 @@ public class ConsentFormView extends LinearLayout {
                         0, 0, 0);
             } else {
                 view.setBackgroundResource(R.drawable.cmp_bg_field_chip);
-                view.setPadding(dp(14), 0, dp(14), 0);
+                view.setPadding(dp(compact ? 10 : 14), dp(4), dp(compact ? 10 : 14), dp(4));
                 view.setMinHeight(dp(36));
                 view.setCompoundDrawablePadding(dp(6));
                 view.setTextColor(color(checked ? R.color.cmp_primary_pressed : R.color.cmp_text_primary));

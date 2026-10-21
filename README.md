@@ -509,6 +509,9 @@ SDK chưa có plugin riêng; app bọc `ConsentFormView` thành platform view / 
 - Tạo view bằng code: `setEmbeddedInForm(true)` + `setAutoLoad(true)` (không có XML để khai thuộc tính).
 - Chiều cao: `ConsentFormView` là `wrap_content` và đổi cao khi tải xong / mở-thu gọn một mục — tự đo
   (`measure` với `UNSPECIFIED`) rồi báo về phía Dart / JS.
+  Theo dõi `OnGlobalLayoutListener`, kể cả khi kích thước container ngoài chưa đổi; chỉ theo dõi
+  bounds của container sẽ bỏ lỡ thao tác mở mục đích. Đo sau lượt layout, làm tròn chiều cao lên
+  và trả chiều cao hiện tại khi Dart / JS gắn handler để không mất sự kiện đầu tiên.
 - Gửi: nút của app gọi `form.submit(values, callback)`; kiểm tra `form.isSubmitting()` trước để cầu
   nối không chờ một callback sẽ không đến.
 - Từ `1.1.1` SDK không dùng ripple trên Android < 8.0, vì Android 7.x abort RenderThread khi ripple chạy
@@ -597,6 +600,10 @@ Dạng accordion — mỗi lúc mở 1 mục đích; tự đổi theo **độ r�
 |---|---|---|---|
 | < 560dp (điện thoại) | chip bật/tắt có dấu ✓ | 1 hàng riêng | "Trường dữ liệu · 5/8" |
 | ≥ 560dp (tablet, điện thoại xoay ngang) | checkbox 2 cột | cạnh tiêu đề | "5/8" trên hàng tiêu đề mục |
+
+View dưới 360dp dùng cỡ chữ và khoảng cách gọn hơn; vẫn áp dụng cỡ chữ hệ thống (`sp`) và cho
+tên mục đích / trường dữ liệu xuống dòng. Ví dụ màn 720 × 1600px, density 2 và lề app 24dp mỗi
+bên còn 312dp cho form. Chế độ giao diện được chọn ngay khi đo để host nhận đúng chiều cao.
 
 Màu chính `@color/cmp_primary` (`#146052`); ghi đè các màu `cmp_*` trong `res/values` của app để đổi
 theme. Không dùng ripple ở các nút của form trên Android &lt; 8.0 (xem mục Flutter / React Native).
