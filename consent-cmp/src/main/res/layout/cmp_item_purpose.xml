@@ -31,7 +31,7 @@
             android:minHeight="@dimen/cmp_touch"
             android:orientation="horizontal"
             android:paddingTop="6dp"
-            android:paddingBottom="6dp">
+            android:paddingBottom="6dp" android:tag="cmp:cmp_bg_row:">
 
             <ImageView
                 android:id="@+id/cmp_iv_chevron"
@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/cmp_text_primary"
                     android:textSize="@dimen/cmp_text_purpose"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" android:tag="cmp::cmp_text_primary" />
 
                 <TextView
                     android:id="@+id/cmp_tv_purpose_subtitle"
@@ -63,7 +63,7 @@
                     android:maxLines="1"
                     android:textColor="@color/cmp_text_secondary"
                     android:textSize="@dimen/cmp_text_small"
-                    android:visibility="gone" />
+                    android:visibility="gone" android:tag="cmp::cmp_text_secondary" />
             </LinearLayout>
         </LinearLayout>
 
@@ -75,7 +75,7 @@
             android:textColor="@color/cmp_link"
             android:textSize="@dimen/cmp_text_small"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone" android:tag="cmp::cmp_link" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/cmp_sw_purpose"
@@ -104,7 +104,7 @@
             android:lineSpacingExtra="2dp"
             android:textColor="@color/cmp_text_primary"
             android:textSize="@dimen/cmp_text_small"
-            android:visibility="gone" />
+            android:visibility="gone" android:tag="cmp::cmp_text_primary" />
 
         <TextView
             android:id="@+id/cmp_btn_show_more"
@@ -117,7 +117,7 @@
             android:textColor="@color/cmp_link"
             android:textSize="@dimen/cmp_text_small"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone" android:tag="cmp:cmp_bg_link:cmp_link" />
 
         <!-- Man rong: "Chia se voi" va "Chon tat ca" cung 1 hang (ConsentFormView doi orientation) -->
         <LinearLayout
@@ -150,7 +150,7 @@
                     android:layout_weight="1"
                     android:textColor="@color/cmp_text_primary"
                     android:textSize="@dimen/cmp_text_small"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" android:tag="cmp::cmp_text_primary" />
 
                 <TextView
                     android:id="@+id/cmp_btn_select_all"
@@ -161,7 +161,7 @@
                     android:text="@string/cmp_select_all"
                     android:textColor="@color/cmp_link"
                     android:textSize="@dimen/cmp_text_small"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" android:tag="cmp:cmp_bg_link:cmp_link" />
             </LinearLayout>
         </LinearLayout>
 

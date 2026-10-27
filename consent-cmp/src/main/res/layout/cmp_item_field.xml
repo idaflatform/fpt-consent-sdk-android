@@ -14,4 +14,4 @@
     android:paddingStart="14dp"
     android:paddingEnd="14dp"
     android:textColor="@color/cmp_text_primary"
-    android:textSize="@dimen/cmp_text_body" />
+    android:textSize="@dimen/cmp_text_body" android:tag="cmp::cmp_text_primary" />

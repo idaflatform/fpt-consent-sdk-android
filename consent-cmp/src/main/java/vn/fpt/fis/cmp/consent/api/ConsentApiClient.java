@@ -46,6 +46,10 @@ public final class ConsentApiClient {
         return request("GET", options.configUrl(), null);
     }
 
+    public JSONObject fetchAppearanceJson() throws ConsentException {
+        return request("GET", options.configUrl().replace("/config?", "/appearance?"), null, 1500);
+    }
+
     /** POST /sendData */
     public SendConsentResult sendData(JSONObject body) throws ConsentException {
         JSONObject json = request("POST", options.sendDataUrl(), body);
@@ -53,12 +57,16 @@ public final class ConsentApiClient {
     }
 
     private JSONObject request(String method, String url, JSONObject body) throws ConsentException {
+        return request(method, url, body, 0);
+    }
+
+    private JSONObject request(String method, String url, JSONObject body, int timeout) throws ConsentException {
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setRequestMethod(method);
-            conn.setConnectTimeout(options.connectTimeoutMs);
-            conn.setReadTimeout(options.readTimeoutMs);
+            conn.setConnectTimeout(timeout > 0 ? timeout : options.connectTimeoutMs);
+            conn.setReadTimeout(timeout > 0 ? timeout : options.readTimeoutMs);
             conn.setRequestProperty("Accept", "application/json");
             // Cau hinh consent doi tren portal la phai thay ngay: khong cho HttpURLConnection,
             // webview cache hay proxy trung gian tra ban cu.

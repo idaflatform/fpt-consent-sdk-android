@@ -57,6 +57,21 @@ public class ConsentFormLayoutTest {
         form.layout(0, 0, width, form.getMeasuredHeight());
     }
 
+    @Test public void remoteThemePreservesWrappingAndFontScaleAcrossLayouts() throws Exception {
+        ConsentFormView form = form(1.3f);
+        form.setAppearance(vn.fpt.fis.cmp.consent.ConsentAppearance.parse(new org.json.JSONObject(
+            "{\"schemaVersion\":1,\"theme\":{\"colors\":{\"textPrimary\":\"#442288\",\"primary\":\"#673AB7\"}},\"typography\":{\"family\":\"serif\",\"title\":{\"size\":24},\"body\":{\"size\":18}}}")));
+        for (int width : new int[]{624, 1200}) {
+            layout(form, width);
+            TextView title = form.findViewById(R.id.cmp_tv_title);
+            assertEquals(0xff442288, title.getCurrentTextColor());
+            assertEquals(24 * form.getResources().getDisplayMetrics().scaledDensity, title.getTextSize(), 0.1f);
+            assertCompleteText((TextView) form.findViewById(R.id.cmp_tv_purpose_label));
+            ViewGroup fields = form.findViewById(R.id.cmp_container_fields);
+            assertCompleteText((TextView) fields.getChildAt(0));
+        }
+    }
+
     @Test public void narrow720PixelHostWrapsAllPurposeAndFieldText() throws Exception {
         for (float scale : new float[]{1f, 1.3f}) {
             ConsentFormView form = form(scale);

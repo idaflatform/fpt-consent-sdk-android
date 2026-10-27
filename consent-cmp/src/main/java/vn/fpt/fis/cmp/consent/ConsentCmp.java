@@ -48,6 +48,20 @@ public final class ConsentCmp {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
 
+    private final AppearanceRepository appearances;
+    private volatile ConsentAppearance appearance = ConsentAppearance.defaults();
+    public ConsentAppearance appearance() { return appearance; }
+    public AppearanceRepository appearanceRepository() { return appearances; }
+    public void getAppearance(ConsentCallback<ConsentAppearance> callback) {
+        executor.execute(() -> { appearance = appearances.get(); postSuccess(callback, appearance); });
+    }
+    public void refreshAppearance(ConsentCallback<ConsentAppearance> callback) {
+        executor.execute(() -> { appearance = appearances.refresh(); postSuccess(callback, appearance); });
+    }
+    public void clearAppearanceCache() {
+        executor.execute(() -> { appearances.clear(); appearance = ConsentAppearance.defaults(); });
+    }
+
     private volatile ConsentConfig cachedConfig;
     /** Chuoi mo ta app, tinh mot lan roi dung lai. */
     private volatile String appSource;
@@ -59,6 +73,7 @@ public final class ConsentCmp {
         this.options = options;
         this.api = new ConsentApiClient(options);
         this.store = new ConsentStore(this.appContext);
+        this.appearances = new AppearanceRepository(this.appContext, options, api);
     }
 
     /**
@@ -154,6 +169,7 @@ public final class ConsentCmp {
             @Override
             public void run() {
                 try {
+                    appearance = appearances.get();
                     if (preferCache && options.cacheConfig) {
                         String cached = store.loadConfig(options.configTtlMs, System.currentTimeMillis());
                         if (cached != null) {

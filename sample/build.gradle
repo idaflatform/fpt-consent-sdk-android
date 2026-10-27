@@ -16,7 +16,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId 'vn.fpt.fis.cmp.sample'
+        applicationId (project.findProperty('cmp.sampleApplicationId') ?: 'vn.fpt.fis.cmp.sample')
         minSdk 21
         targetSdk 34
         versionCode 1
@@ -24,8 +24,8 @@ android {
 
         // SDK tu khoi tao tu <meta-data> trong AndroidManifest.xml.
         manifestPlaceholders = [
-                cmpCodeConfig: localProps.getProperty('cmp.codeConfig', ''),
-                cmpBaseUrl   : localProps.getProperty('cmp.baseUrl', ''),
+                cmpCodeConfig: project.findProperty('cmp.codeConfig') ?: localProps.getProperty('cmp.codeConfig', ''),
+                cmpBaseUrl   : project.findProperty('cmp.baseUrl') ?: localProps.getProperty('cmp.baseUrl', ''),
         ]
     }
 

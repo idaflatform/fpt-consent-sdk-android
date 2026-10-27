@@ -16,7 +16,7 @@
         android:textColor="@color/cmp_text_primary"
         android:textSize="@dimen/cmp_text_body"
         android:textStyle="bold"
-        android:visibility="gone" />
+        android:visibility="gone" android:tag="cmp::cmp_text_primary" />
 
     <!-- Trạng thái đang tải /config (autoload / reload) -->
     <LinearLayout
@@ -27,7 +27,7 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="32dp"
-        android:visibility="gone">
+        android:visibility="gone" android:tag="cmp:cmp_bg_card:">
 
         <ProgressBar
             android:layout_width="32dp"
@@ -39,7 +39,7 @@
             android:layout_marginTop="@dimen/cmp_space_md"
             android:text="@string/cmp_loading"
             android:textColor="@color/cmp_text_secondary"
-            android:textSize="@dimen/cmp_text_body" />
+            android:textSize="@dimen/cmp_text_body" android:tag="cmp::cmp_text_secondary" />
     </LinearLayout>
 
     <!-- Trạng thái tải /config lỗi: thông báo + nút thử lại -->
@@ -51,7 +51,7 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="32dp"
-        android:visibility="gone">
+        android:visibility="gone" android:tag="cmp:cmp_bg_card:">
 
         <TextView
             android:id="@+id/cmp_form_tv_state_error"
@@ -60,7 +60,7 @@
             android:gravity="center"
             android:text="@string/cmp_error_generic"
             android:textColor="@color/cmp_error"
-            android:textSize="@dimen/cmp_text_body" />
+            android:textSize="@dimen/cmp_text_body" android:tag="cmp::cmp_error" />
 
         <TextView
             android:id="@+id/cmp_form_btn_retry"
@@ -75,7 +75,7 @@
             android:text="@string/cmp_retry"
             android:textColor="@android:color/white"
             android:textSize="@dimen/cmp_text_body"
-            android:textStyle="bold" />
+            android:textStyle="bold" android:tag="cmp:cmp_bg_button_primary:" />
     </LinearLayout>
 
     <LinearLayout
@@ -85,7 +85,7 @@
         android:background="@drawable/cmp_bg_card"
         android:divider="@drawable/cmp_divider_line"
         android:orientation="vertical"
-        android:showDividers="middle">
+        android:showDividers="middle" android:tag="cmp:cmp_bg_card:">
 
         <!-- Tieu de + mo ta; man rong: "Dong y tat ca" duoc them vao cuoi hang nay -->
         <LinearLayout
@@ -112,7 +112,7 @@
                     android:text="@string/cmp_list_title"
                     android:textColor="@color/cmp_text_primary"
                     android:textSize="@dimen/cmp_text_title"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" android:tag="cmp::cmp_text_primary" />
 
                 <TextView
                     android:id="@+id/cmp_tv_description"
@@ -121,7 +121,7 @@
                     android:layout_marginTop="2dp"
                     android:textColor="@color/cmp_text_secondary"
                     android:textSize="@dimen/cmp_text_small"
-                    android:visibility="gone" />
+                    android:visibility="gone" android:tag="cmp::cmp_text_secondary" />
             </LinearLayout>
         </LinearLayout>
 
@@ -150,7 +150,7 @@
                     android:text="@string/cmp_accept_all"
                     android:textColor="@color/cmp_text_primary"
                     android:textSize="@dimen/cmp_text_purpose"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" android:tag="cmp::cmp_text_primary" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/cmp_sw_accept_all"
@@ -182,7 +182,7 @@
             android:gravity="center"
             android:minHeight="@dimen/cmp_touch"
             android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="gone" android:tag="cmp:cmp_bg_list_toggle:">
 
             <TextView
                 android:id="@+id/cmp_tv_toggle_list"
@@ -190,7 +190,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/cmp_link"
                 android:textSize="@dimen/cmp_text_body"
-                android:textStyle="bold" />
+                android:textStyle="bold" android:tag="cmp::cmp_link" />
 
             <ImageView
                 android:id="@+id/cmp_iv_toggle_list"
@@ -216,7 +216,7 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/cmp_space_md"
                 android:background="@color/cmp_divider"
-                android:visibility="gone" />
+                android:visibility="gone" android:tag="cmp:cmp_divider:" />
 
             <TextView
                 android:id="@+id/cmp_tv_error"
@@ -228,7 +228,7 @@
                 android:paddingBottom="10dp"
                 android:textColor="@color/cmp_error"
                 android:textSize="@dimen/cmp_text_body"
-                android:visibility="gone" />
+                android:visibility="gone" android:tag="cmp::cmp_error" />
 
             <LinearLayout
                 android:id="@+id/cmp_container_actions"
@@ -247,7 +247,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/cmp_text_secondary"
-                    android:textSize="@dimen/cmp_text_small" />
+                    android:textSize="@dimen/cmp_text_small" android:tag="cmp::cmp_text_secondary" />
 
                 <ProgressBar
                     android:id="@+id/cmp_progress"
@@ -268,7 +268,7 @@
                     android:text="@string/cmp_submit"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/cmp_text_body"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" android:tag="cmp:cmp_bg_button_primary:" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

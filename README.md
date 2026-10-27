@@ -1,5 +1,8 @@
 # Tích hợp CMP Consent SDK cho Android — 8 bước
 
+> **Bản đang chuẩn bị phát hành: `1.2.0`.** Hướng dẫn dưới đây dùng bản public `1.1.0`
+> cho đến khi `1.2.0` xuất hiện trên Maven Central. Quy trình ký và publish: [PUBLISHING.md](PUBLISHING.md).
+
 Tài liệu dành cho **lập trình viên app**. SDK phát hành trên **Maven Central** — public, không cần tài
 khoản, không cần khai URL repository riêng. Mẫu code có cả **Java** và **Kotlin**, cấu hình Gradle có cả
 **Groovy** (`build.gradle`) và **Kotlin DSL** (`build.gradle.kts`) — chọn đúng loại project của bạn.
@@ -14,6 +17,8 @@ Cần 2 thông tin:
 > **Phiên bản hiện tại: `1.1.0`.** Các bước dưới đây dùng 3 tính năng có từ `1.1.0`: **tự khởi tạo từ
 > `<meta-data>`**, **tự tải cấu hình (`cmpAutoLoad`) + `reload()`**, và **`form.submit(...)`**.
 > Đang dùng `1.0.x`? Xem [Nâng cấp từ 1.0.x](#nâng-cấp-từ-10x).
+
+Theme và font từ CMP Portal: [REMOTE_APPEARANCE.md](REMOTE_APPEARANCE.md).
 
 ## SDK làm gì
 

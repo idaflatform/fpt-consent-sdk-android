@@ -9,4 +9,4 @@
     android:paddingEnd="@dimen/cmp_space_sm"
     android:paddingBottom="2dp"
     android:textColor="@color/cmp_chip_text"
-    android:textSize="@dimen/cmp_text_chip" />
+    android:textSize="@dimen/cmp_text_chip" android:tag="cmp:cmp_bg_chip:cmp_chip_text" />

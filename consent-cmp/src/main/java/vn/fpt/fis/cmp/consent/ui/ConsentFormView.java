@@ -199,8 +199,22 @@ public class ConsentFormView extends LinearLayout {
                 new int[]{color(R.color.cmp_primary), color(R.color.cmp_switch_track_off)}));
     }
 
+    private vn.fpt.fis.cmp.consent.ConsentAppearance appearance = vn.fpt.fis.cmp.consent.ConsentAppearance.defaults();
+    private boolean appearanceOverride;
+    public void setAppearance(vn.fpt.fis.cmp.consent.ConsentAppearance value) {
+        appearanceOverride = true; appearance = value == null ? vn.fpt.fis.cmp.consent.ConsentAppearance.defaults() : value;
+        applyLayoutMode(); applyAppearance();
+    }
+    private void applyAppearance() {
+        AppearanceRenderer.apply(this, appearance, ConsentCmp.isInitialized() ? ConsentCmp.get().appearanceRepository() : null);
+    }
+    private void appearanceBackground(View view, int res) {
+        view.setBackgroundResource(res);
+        view.setTag(R.id.cmp_appearance_background, res == 0 ? "" : AppearanceRenderer.backgroundName(res));
+    }
+
     private int color(int res) {
-        return ContextCompat.getColor(getContext(), res);
+        return appearance.color(AppearanceRenderer.token(res), ContextCompat.getColor(getContext(), res));
     }
 
     private int dp(float value) {
@@ -472,6 +486,7 @@ public class ConsentFormView extends LinearLayout {
         final int generation = ++loadGeneration;
         loading = true;
         showState(loadingView);
+        applyAppearance();
         ConsentCmp.get().fetchConfig(new ConsentCallback<ConsentConfig>() {
             @Override
             public void onSuccess(ConsentConfig result) {
@@ -497,9 +512,11 @@ public class ConsentFormView extends LinearLayout {
     }
 
     private void showLoadError(ConsentException error) {
+        if (!appearanceOverride && ConsentCmp.isInitialized()) appearance = ConsentCmp.get().appearance();
         tvErrorState.setText(error.getMessage() != null
                 ? error.getMessage() : getContext().getString(R.string.cmp_error_generic));
         showState(errorStateView);
+        applyAppearance();
         if (loadListener != null) {
             loadListener.onLoadFailed(error);
         }
@@ -614,6 +631,7 @@ public class ConsentFormView extends LinearLayout {
         actionsVisible = visible;
         actionsView.setVisibility(visible ? VISIBLE : GONE);
         updateFooterVisibility();
+        applyAppearance();
     }
 
     /**
@@ -626,6 +644,7 @@ public class ConsentFormView extends LinearLayout {
      * @param initial quyet dinh khoi tao (vd lan truoc da luu); null = lay mac dinh cua config
      */
     public void bind(ConsentConfig config, @Nullable ConsentState initial) {
+        if (!appearanceOverride && ConsentCmp.isInitialized()) appearance = ConsentCmp.get().appearance();
         // Huỷ kết quả của lần tải đang dở.
         loadGeneration++;
         loading = false;
@@ -682,6 +701,7 @@ public class ConsentFormView extends LinearLayout {
             tvError.setVisibility(VISIBLE);
         }
         updateFooterVisibility();
+        applyAppearance();
     }
 
     /** Khoá form (cả các toggle) + hiện vòng quay trong lúc gọi /sendData. */
@@ -690,6 +710,7 @@ public class ConsentFormView extends LinearLayout {
         progress.setVisibility(submitting ? VISIBLE : GONE);
         btnSubmit.setEnabled(!submitting);
         setInputsEnabled(!submitting);
+        applyAppearance();
     }
 
     /** True khi đang gọi /sendData. */
@@ -726,9 +747,8 @@ public class ConsentFormView extends LinearLayout {
     /** Accordion: mo muc {@code key}, dong cac muc khac; {@code null} = dong het. */
     private void setOpen(@Nullable String key) {
         openKey = key;
-        for (PurposeHolder holder : holders) {
-            holder.render();
-        }
+        for (PurposeHolder holder : holders) { holder.render(); }
+        applyAppearance();
     }
 
     private void textSize(TextView view, int regular, int small) {
@@ -786,7 +806,7 @@ public class ConsentFormView extends LinearLayout {
 
         // Man rong (thiet ke tablet): the nen xam, danh sach la khung trang rieng, chan khoi nen
         // trang; card khong ke duong giua cac khoi.
-        contentView.setBackgroundResource(wide ? R.drawable.cmp_bg_card_subtle : R.drawable.cmp_bg_card);
+        appearanceBackground(contentView, wide ? R.drawable.cmp_bg_card_subtle : R.drawable.cmp_bg_card);
         contentView.setPadding(dp(1), dp(1), dp(1), dp(1));
         footer.setBackgroundColor(wide ? color(R.color.cmp_bg) : 0);
         contentView.setShowDividers(wide ? SHOW_DIVIDER_NONE : SHOW_DIVIDER_MIDDLE);
@@ -795,16 +815,18 @@ public class ConsentFormView extends LinearLayout {
         listLp.setMarginStart(wide ? dp(20) : 0);
         listLp.setMarginEnd(wide ? dp(20) : 0);
         containerPurposes.setLayoutParams(listLp);
-        containerPurposes.setBackgroundResource(wide ? R.drawable.cmp_bg_box : 0);
+        appearanceBackground(containerPurposes, wide ? R.drawable.cmp_bg_box : 0);
         LinearLayout.LayoutParams toggleLp =
                 (LinearLayout.LayoutParams) btnToggleList.getLayoutParams();
         toggleLp.topMargin = wide ? dp(12) : 0;
         btnToggleList.setLayoutParams(toggleLp);
 
         updateFooterVisibility();
+        applyAppearance();
         for (PurposeHolder holder : holders) {
             holder.render();
         }
+        applyAppearance();
     }
 
     /**
@@ -857,6 +879,7 @@ public class ConsentFormView extends LinearLayout {
                 granted++;
             }
         }
+        applyAppearance();
         swAcceptAll.setChecked(state.isAllGranted());
         binding = false;
         tvSummary.setText(getContext().getString(
@@ -1086,7 +1109,7 @@ public class ConsentFormView extends LinearLayout {
             // Truong du lieu: chip tu xuong dong (hep) / checkbox 2 cot trong khung vien (rong).
             fieldsContainer.setColumns(wide ? 2 : 0);
             fieldsContainer.setGaps(wide ? dp(16) : dp(8), wide ? dp(2) : dp(8));
-            fieldsContainer.setBackgroundResource(wide ? R.drawable.cmp_bg_box : 0);
+            appearanceBackground(fieldsContainer, wide ? R.drawable.cmp_bg_box : 0);
             fieldsContainer.setPadding(wide ? dp(14) : 0, wide ? dp(6) : 0,
                     wide ? dp(14) : 0, wide ? dp(6) : 0);
             LinearLayout.LayoutParams fieldsLp =
@@ -1173,7 +1196,7 @@ public class ConsentFormView extends LinearLayout {
                         checked ? R.drawable.cmp_ic_checkbox_on : R.drawable.cmp_ic_checkbox_off,
                         0, 0, 0);
             } else {
-                view.setBackgroundResource(R.drawable.cmp_bg_field_chip);
+                appearanceBackground(view, R.drawable.cmp_bg_field_chip);
                 view.setPadding(dp(compact ? 10 : 14), dp(4), dp(compact ? 10 : 14), dp(4));
                 view.setMinHeight(dp(36));
                 view.setCompoundDrawablePadding(dp(6));

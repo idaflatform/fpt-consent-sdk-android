@@ -10,6 +10,7 @@ export const config={code:'cp_demo::t_demo',name:'CMP integration fixture',statu
 
 export function createFixtureServer(){
  const records=[];
+ const requests={appearance:0,config:0};
  const server=http.createServer(async(req,res)=>{
   res.setHeader('Content-Type','application/json; charset=utf-8');
   res.setHeader('Access-Control-Allow-Origin','*');
@@ -18,8 +19,14 @@ export function createFixtureServer(){
   const url=new URL(req.url,'http://localhost');
   const reply=(status,data)=>{res.writeHead(status);res.end(JSON.stringify(data));};
   if(req.method==='GET'&&url.pathname==='/health'){reply(200,{ok:true});return;}
+  if(req.method==='GET'&&url.pathname==='/requests'){reply(200,requests);return;}
+  if(url.pathname.endsWith('/appearance')&&req.method==='GET'){
+   requests.appearance++;
+   reply(200,{data:{schemaVersion:1,revision:'fixture-purple-1',theme:{colors:{primary:'#673AB7',link:'#673AB7',surface:'#F3EDFF'}},typography:{family:'serif',title:{size:20,weight:700},body:{size:15,weight:400},caption:{size:13,weight:400},button:{size:14,weight:600}}}});return;
+  }
   if(req.method==='GET'&&url.pathname==='/records'){reply(200,{records});return;}
   if(url.pathname.endsWith('/config')&&req.method==='GET'){
+   requests.config++;
    if(url.searchParams.get('code_config')==='fail-load'){reply(503,{message:'Fixture load failed'});return;}
    reply(200,{data:{...config,status:url.searchParams.get('code_config')==='inactive'?'inactive':'active'}});return;
   }
