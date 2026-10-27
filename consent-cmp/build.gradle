@@ -61,12 +61,12 @@ mavenPublishing {
 
     // Chi ky khi da cau hinh khoa GPG. Nho vay `publishToMavenLocal` chay duoc de kiem tra artifact
     // ngay ca khi chua tao khoa; con khi day len Central thi bat buoc phai co (Central tu choi
-    // artifact khong chu ky). Cach cau hinh: tools/setup-signing.sh
+    // artifact khong chu ky). Cach cau hinh: PUBLISHING.md
     if (project.findProperty('signingInMemoryKey') || project.findProperty('signing.keyId')) {
         signAllPublications()
     } else {
         logger.warn('[consent-cmp] Chua co khoa GPG -> BO QUA ky artifact. ' +
-                'Chay tools/setup-signing.sh truoc khi publish len Maven Central.')
+                'Xem PUBLISHING.md truoc khi publish len Maven Central.')
     }
 
     coordinates(
@@ -81,7 +81,7 @@ mavenPublishing {
                 '(purposes, data fields, third parties) with required-item validation, and submits ' +
                 'the user decision as an auditable consent record.'
         inceptionYear = '2026'
-        url = project.findProperty('sdkProjectUrl') ?: 'https://github.com/idaflatform/fpt-consent-sdk'
+        url = project.findProperty('sdkProjectUrl') ?: 'https://github.com/idaflatform/fpt-consent-sdk-android'
 
         licenses {
             license {
