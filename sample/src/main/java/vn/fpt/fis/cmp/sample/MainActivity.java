@@ -1,5 +1,6 @@
 package vn.fpt.fis.cmp.sample;
 
+import vn.fpt.fis.cmp.consent.ConsentAppearance;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -96,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.btn_refresh_appearance).setOnClickListener(v -> {
             if (!ConsentCmp.isInitialized()) return;
-            ConsentCmp.get().refreshAppearance(new ConsentCallback<vn.fpt.fis.cmp.consent.ConsentAppearance>() {
-                @Override public void onSuccess(vn.fpt.fis.cmp.consent.ConsentAppearance appearance) {
+            ConsentCmp.get().refreshAppearance(new ConsentCallback<ConsentAppearance>() {
+                @Override public void onSuccess(ConsentAppearance appearance) {
                     tvResult.setText("Giao diện: " + appearance.revision);
                     form.reload();
                 }

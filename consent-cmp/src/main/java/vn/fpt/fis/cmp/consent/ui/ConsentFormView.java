@@ -1,5 +1,6 @@
 package vn.fpt.fis.cmp.consent.ui;
 
+import vn.fpt.fis.cmp.consent.ConsentAppearance;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -199,10 +200,10 @@ public class ConsentFormView extends LinearLayout {
                 new int[]{color(R.color.cmp_primary), color(R.color.cmp_switch_track_off)}));
     }
 
-    private vn.fpt.fis.cmp.consent.ConsentAppearance appearance = vn.fpt.fis.cmp.consent.ConsentAppearance.defaults();
+    private ConsentAppearance appearance = ConsentAppearance.defaults();
     private boolean appearanceOverride;
-    public void setAppearance(vn.fpt.fis.cmp.consent.ConsentAppearance value) {
-        appearanceOverride = true; appearance = value == null ? vn.fpt.fis.cmp.consent.ConsentAppearance.defaults() : value;
+    public void setAppearance(ConsentAppearance value) {
+        appearanceOverride = true; appearance = value == null ? ConsentAppearance.defaults() : value;
         applyLayoutMode(); applyAppearance();
     }
     private void applyAppearance() {

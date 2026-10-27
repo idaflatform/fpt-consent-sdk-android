@@ -1,25 +1,33 @@
 package vn.fpt.fis.cmp.consent;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.os.SystemClock;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import vn.fpt.fis.cmp.consent.api.ConsentApiClient;
 
 /** Read once, persisted without TTL. All entry points execute off the UI thread. */
-@android.annotation.SuppressLint("ApplySharedPref") // Calls run on the SDK worker; durability is required before restart.
+@SuppressLint("ApplySharedPref") // Calls run on the SDK worker; durability is required before restart.
 public final class AppearanceRepository {
     public interface Loader { JSONObject load() throws Exception; }
     private final SharedPreferences prefs;
     private final String key;
     private final File fonts;
     private final Loader loader;
-    private final java.util.Map<String, Typeface> typefaces = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<String, Typeface> typefaces = new ConcurrentHashMap<>();
     private ConsentAppearance current;
     private boolean attempted;
 
@@ -72,7 +80,7 @@ public final class AppearanceRepository {
         if (list != null) for (int i = 0; i < Math.min(4, list.length()); i++) {
             JSONObject font = list.optJSONObject(i);
             if (font == null) continue;
-            String digest = font.optString("sha256").toLowerCase(java.util.Locale.ROOT);
+            String digest = font.optString("sha256").toLowerCase(Locale.ROOT);
             if (!digest.matches("[a-f0-9]{64}")) continue;
             int d = Math.abs(font.optInt("weight", 400) - weight);
             File file = new File(fonts, digest + ".font");
@@ -93,18 +101,18 @@ public final class AppearanceRepository {
         JSONArray list = type == null ? null : type.optJSONArray("fonts");
         if (list == null) return;
         fonts.mkdirs();
-        long deadline = android.os.SystemClock.elapsedRealtime() + 3000;
+        long deadline = SystemClock.elapsedRealtime() + 3000;
         for (int i = 0; i < Math.min(4, list.length()); i++) {
             JSONObject font = list.optJSONObject(i);
             if (font == null) continue;
-            String digest = font.optString("sha256").toLowerCase(java.util.Locale.ROOT);
+            String digest = font.optString("sha256").toLowerCase(Locale.ROOT);
             String url = font.optString("url");
             if (!digest.matches("[a-f0-9]{64}") || !url.startsWith("https://")) continue;
             File target = new File(fonts, digest + ".font");
             HttpURLConnection conn = null; File temporary = null;
             try {
                 if (target.isFile() && digest.equals(fileHash(target))) continue;
-                int remaining = (int) (deadline - android.os.SystemClock.elapsedRealtime());
+                int remaining = (int) (deadline - SystemClock.elapsedRealtime());
                 if (remaining <= 0) break;
                 conn = (HttpURLConnection) new URL(url).openConnection();
                 conn.setInstanceFollowRedirects(false);
@@ -115,7 +123,7 @@ public final class AppearanceRepository {
                     byte[] bytes = new byte[8192]; int total = 0, n;
                     while ((n = input.read(bytes)) != -1) {
                         total += n;
-                        if (total > 4 * 1024 * 1024 || android.os.SystemClock.elapsedRealtime() > deadline) throw new IOException();
+                        if (total > 4 * 1024 * 1024 || SystemClock.elapsedRealtime() > deadline) throw new IOException();
                         output.write(bytes, 0, n);
                     }
                 }

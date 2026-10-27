@@ -1,11 +1,15 @@
 package vn.fpt.fis.cmp.consent.ui;
 
 import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.graphics.drawable.*;
 import android.util.TypedValue;
 import android.view.*;
 import android.widget.*;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import vn.fpt.fis.cmp.consent.*;
 
 /** Applies only to SDK-owned views. Resource tags preserve semantic colors sharing the same default. */
@@ -102,7 +106,7 @@ final class AppearanceRenderer {
         if (name.equals("cmp_chip_border")) id = R.color.cmp_chip_border;
         if (name.equals("cmp_switch_thumb_off")) id = R.color.cmp_switch_thumb_off;
         if (name.equals("cmp_switch_track_off")) id = R.color.cmp_switch_track_off;
-        return a.color(token(name), id == 0 ? fallback : androidx.core.content.ContextCompat.getColor(view.getContext(), id));
+        return a.color(token(name), id == 0 ? fallback : ContextCompat.getColor(view.getContext(), id));
     }
     static void apply(View view, ConsentAppearance a, AppearanceRepository repository) {
         if (a.json().optInt("schemaVersion") != 1) return;
@@ -118,8 +122,8 @@ final class AppearanceRenderer {
             String role = role(view.getId());
             int weight = a.weight(role, text.getTypeface() != null && text.getTypeface().isBold() ? 700 : 400);
             if (repository != null) text.setTypeface(repository.typeface(a, weight));
-            else text.setTypeface(android.graphics.Typeface.create("system".equals(a.family()) ? null : a.family(),
-                    weight >= 600 ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL));
+            else text.setTypeface(Typeface.create("system".equals(a.family()) ? null : a.family(),
+                    weight >= 600 ? Typeface.BOLD : Typeface.NORMAL));
             float sp = text.getTextSize() / view.getResources().getDisplayMetrics().scaledDensity;
             text.setTextSize(TypedValue.COMPLEX_UNIT_SP, a.size(role, sp));
             if (text instanceof CompoundButton && !(text instanceof SwitchMaterial)) {

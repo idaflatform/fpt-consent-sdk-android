@@ -1,5 +1,7 @@
 package vn.fpt.fis.cmp.consent.ui;
 
+import vn.fpt.fis.cmp.consent.ConsentAppearance;
+import org.json.JSONObject;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -59,7 +61,7 @@ public class ConsentFormLayoutTest {
 
     @Test public void remoteThemePreservesWrappingAndFontScaleAcrossLayouts() throws Exception {
         ConsentFormView form = form(1.3f);
-        form.setAppearance(vn.fpt.fis.cmp.consent.ConsentAppearance.parse(new org.json.JSONObject(
+        form.setAppearance(ConsentAppearance.parse(new JSONObject(
             "{\"schemaVersion\":1,\"theme\":{\"colors\":{\"textPrimary\":\"#442288\",\"primary\":\"#673AB7\"}},\"typography\":{\"family\":\"serif\",\"title\":{\"size\":24},\"body\":{\"size\":18}}}")));
         for (int width : new int[]{624, 1200}) {
             layout(form, width);
