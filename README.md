@@ -1,7 +1,8 @@
 # Tích hợp CMP Consent SDK cho Android — 8 bước
 
-> **Bản đang chuẩn bị phát hành: `1.2.0`.** Hướng dẫn dưới đây dùng bản public `1.1.0`
-> cho đến khi `1.2.0` xuất hiện trên Maven Central. Quy trình ký và publish: [PUBLISHING.md](PUBLISHING.md).
+> **Từ `1.2.0` SDK đổi tọa độ thành `io.github.idaplatform:fpt-cmp-sdk`** (bản ≤ `1.1.0` ở
+> `io.github.idaflatform:fpt-consent-sdk`). Chỉ dùng `1.2.0` khi bản này đã xuất hiện trên Maven Central.
+> Maintainer — quy trình ký và publish: [PUBLISHING.md](PUBLISHING.md).
 
 Tài liệu dành cho **lập trình viên app**. SDK phát hành trên **Maven Central** — public, không cần tài
 khoản, không cần khai URL repository riêng. Mẫu code có cả **Java** và **Kotlin**, cấu hình Gradle có cả
