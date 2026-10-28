@@ -169,12 +169,13 @@ public final class ConsentCmp {
             @Override
             public void run() {
                 try {
-                    appearance = appearances.get();
                     if (preferCache && options.cacheConfig) {
                         String cached = store.loadConfig(options.configTtlMs, System.currentTimeMillis());
                         if (cached != null) {
                             try {
-                                ConsentConfig config = ConsentJson.parseConfig(new JSONObject(cached));
+                                JSONObject json = new JSONObject(cached);
+                                appearance = appearances.fromConfig(json);
+                                ConsentConfig config = ConsentJson.parseConfig(json);
                                 cachedConfig = config;
                                 postSuccess(callback, config);
                                 return;
@@ -185,6 +186,7 @@ public final class ConsentCmp {
                         }
                     }
                     JSONObject json = api.fetchConfigJson();
+                    appearance = appearances.fromConfig(json);
                     ConsentConfig config = ConsentJson.parseConfig(json);
                     if (options.cacheConfig) {
                         store.saveConfig(json.toString(), System.currentTimeMillis());
@@ -192,6 +194,7 @@ public final class ConsentCmp {
                     cachedConfig = config;
                     postSuccess(callback, config);
                 } catch (ConsentException e) {
+                    appearance = appearances.cachedOrDefault();
                     // Mat mang: dung tam ban cache cu (neu co) de nguoi dung van tra loi duoc.
                     ConsentConfig fallback = e.httpStatus == 0 ? loadCachedConfig() : null;
                     if (fallback != null) {
@@ -218,7 +221,9 @@ public final class ConsentCmp {
             return null;
         }
         try {
-            return ConsentJson.parseConfig(new JSONObject(raw));
+            JSONObject json = new JSONObject(raw);
+            appearance = appearances.fromConfig(json);
+            return ConsentJson.parseConfig(json);
         } catch (JSONException e) {
             return null;
         }

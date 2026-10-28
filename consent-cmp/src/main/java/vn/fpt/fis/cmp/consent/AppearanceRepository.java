@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import vn.fpt.fis.cmp.consent.api.ConsentApiClient;
+import vn.fpt.fis.cmp.consent.api.ConsentJson;
 
 /** Read once, persisted without TTL. All entry points execute off the UI thread. */
 @SuppressLint("ApplySharedPref") // Calls run on the SDK worker; durability is required before restart.
@@ -32,7 +33,7 @@ public final class AppearanceRepository {
     private boolean attempted;
 
     public AppearanceRepository(Context context, ConsentOptions options, ConsentApiClient api) {
-        this(context, options, api::fetchAppearanceJson);
+        this(context, options, () -> ConsentJson.appearanceFromConfig(api.fetchConfigJson()));
     }
     public AppearanceRepository(Context context, ConsentOptions options, Loader loader) {
         prefs = context.getSharedPreferences("vn.fpt.fis.cmp.appearance", Context.MODE_PRIVATE);
@@ -41,25 +42,42 @@ public final class AppearanceRepository {
         fonts = new File(context.getFilesDir(), "cmp-appearance-fonts");
         this.loader = loader;
     }
-    public synchronized ConsentAppearance get() {
+    private ConsentAppearance cached() {
         if (current != null) return current;
         String raw = prefs.getString(key, null);
         if (raw != null) try {
             current = ConsentAppearance.parse(new JSONObject(raw)); return current;
         } catch (Exception ignored) { prefs.edit().remove(key).commit(); }
+        return null;
+    }
+    public synchronized ConsentAppearance cachedOrDefault() {
+        ConsentAppearance cached = cached();
+        return cached == null ? ConsentAppearance.defaults() : cached;
+    }
+    public synchronized ConsentAppearance get() {
+        ConsentAppearance cached = cached();
+        if (cached != null) return cached;
         if (attempted) return ConsentAppearance.defaults();
         attempted = true;
-        return fetch(false);
+        return fetch(false, loader);
     }
-    public synchronized ConsentAppearance refresh() { attempted = true; return fetch(true); }
-    private ConsentAppearance fetch(boolean refresh) {
+    /** Reuse the content request response; this path never makes another config request. */
+    public synchronized ConsentAppearance fromConfig(JSONObject config) {
+        ConsentAppearance cached = cached();
+        if (cached != null) return cached;
+        if (attempted) return ConsentAppearance.defaults();
+        attempted = true;
+        return fetch(false, () -> ConsentJson.appearanceFromConfig(config));
+    }
+    public synchronized ConsentAppearance refresh() { attempted = true; return fetch(true, loader); }
+    private ConsentAppearance fetch(boolean refresh, Loader source) {
         ConsentAppearance previous = current;
         if (previous == null && refresh) {
             try { previous = ConsentAppearance.parse(new JSONObject(prefs.getString(key, ""))); }
             catch (Exception ignored) { }
         }
         try {
-            ConsentAppearance result = ConsentAppearance.parse(loader.load());
+            ConsentAppearance result = ConsentAppearance.parse(source.load());
             downloadFonts(result);
             prefs.edit().putString(key, result.json().toString()).commit();
             typefaces.clear();

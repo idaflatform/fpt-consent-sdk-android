@@ -1,7 +1,9 @@
 import http from 'node:http';
 import {pathToFileURL} from 'node:url';
 
-export const config={code:'cp_demo::t_demo',name:'CMP integration fixture',status:'active',fields:[],config:{
+export const appearance={schemaVersion:1,revision:'fixture-purple-1',theme:{colors:{primary:'#673AB7',link:'#673AB7',surface:'#F3EDFF'}},typography:{family:'serif',title:{size:20,weight:700},body:{size:15,weight:400},caption:{size:13,weight:400},button:{size:14,weight:600}}};
+
+export const config={appearance,code:'cp_demo::t_demo',name:'CMP integration fixture',status:'active',fields:[],config:{
  title:'Mục đích xử lý dữ liệu',description:'Dữ liệu giả lập phục vụ kiểm thử tích hợp SDK.',submitLabel:'Lưu lựa chọn',items:[
  {id:'registration',code:'registration',label:'Đăng ký tài khoản mẫu',description:'Kiểm tra luồng đăng ký nhúng.',required:true,dataFields:[
  {id:'email',name:'Email',dataType:'EMAIL',display:true,required:true,sharedWithSystem:true}],thirdParties:[]},
@@ -10,7 +12,7 @@ export const config={code:'cp_demo::t_demo',name:'CMP integration fixture',statu
 
 export function createFixtureServer(){
  const records=[];
- const requests={appearance:0,config:0};
+ const requests={config:0};
  const server=http.createServer(async(req,res)=>{
   res.setHeader('Content-Type','application/json; charset=utf-8');
   res.setHeader('Access-Control-Allow-Origin','*');
@@ -20,10 +22,6 @@ export function createFixtureServer(){
   const reply=(status,data)=>{res.writeHead(status);res.end(JSON.stringify(data));};
   if(req.method==='GET'&&url.pathname==='/health'){reply(200,{ok:true});return;}
   if(req.method==='GET'&&url.pathname==='/requests'){reply(200,requests);return;}
-  if(url.pathname.endsWith('/appearance')&&req.method==='GET'){
-   requests.appearance++;
-   reply(200,{data:{schemaVersion:1,revision:'fixture-purple-1',theme:{colors:{primary:'#673AB7',link:'#673AB7',surface:'#F3EDFF'}},typography:{family:'serif',title:{size:20,weight:700},body:{size:15,weight:400},caption:{size:13,weight:400},button:{size:14,weight:600}}}});return;
-  }
   if(req.method==='GET'&&url.pathname==='/records'){reply(200,{records});return;}
   if(url.pathname.endsWith('/config')&&req.method==='GET'){
    requests.config++;

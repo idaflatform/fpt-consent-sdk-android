@@ -1,13 +1,15 @@
 # Giao diện và font từ CMP Portal
 
-SDK gọi `GET {baseUrl}{apiPath}/appearance?code_config=...` khi chưa có appearance
-đã lưu. API gửi cùng header `X-Consent-Integration` như `/config`; backend trả
-`data.schemaVersion=1`, `theme`, `typography` và `revision`.
+SDK đọc `data.appearance` trong response `GET {baseUrl}{apiPath}/config?code_config=...`,
+qua cùng header `X-Consent-Integration` của nội dung consent. Appearance gồm
+`schemaVersion=1`, `theme`, `typography` và `revision`. Khi tải form, SDK dùng chung
+response config, không gửi thêm request để lấy giao diện.
 
 Sau lần tải thành công, SDK dùng cache riêng theo base URL, API path và integration
-key. Cache không có TTL; mở lại form/app hoặc cập nhật app không gọi lại endpoint
-appearance. `/config` vẫn tải nội dung consent như trước. Nếu lần đầu lỗi thì dùng
-giao diện mặc định và thử lại ở phiên SDK tiếp theo.
+key, không TTL. `/config` vẫn tải nội dung consent như trước, nhưng không thay thế
+appearance đã lưu. Nếu thiếu/sai appearance, SDK dùng mặc định và form vẫn tải được;
+lần tải appearance lỗi được thử lại ở phiên SDK tiếp theo. `getAppearance` khi chưa
+có cache và `refreshAppearance` chủ động lấy `/config` để đọc `data.appearance`.
 
 Các form tự tải cấu hình áp dụng appearance tự động. App bind config thủ công
 có thể gọi `getAppearance(callback)` trước và `form.setAppearance(appearance)`.
@@ -42,8 +44,8 @@ profile khác dùng. Clear app data xóa toàn bộ; hành vi restore sau reinst
 thuộc backup của app chủ. Không đưa file font vào OS cache dễ bị thu hồi.
 
 App mẫu có nút cập nhật/xóa appearance. Fixture trong `integrations/tools` trả theme
-tím/font serif; `/requests` cho phép đếm riêng request appearance và config.
+tím/font serif; `/requests` cho phép đếm request config.
 
-Triển khai backend migration `V211__collection_point_mobile_appearance.sql`, CMP,
-gateway và portal trước khi rollout SDK. SDK mới gặp backend chưa có endpoint dùng
-mặc định. Việc này chưa tự deploy hoặc publish artifact lên Maven Central.
+Triển khai backend, gateway và portal hỗ trợ `data.appearance` trên `/consent/config`
+trước khi rollout SDK. Backend cũ thiếu appearance dùng giao diện mặc định. Việc
+này chưa tự deploy hoặc publish artifact lên Maven Central.
