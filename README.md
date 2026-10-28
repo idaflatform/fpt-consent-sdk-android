@@ -1,7 +1,8 @@
 # Tích hợp CMP Consent SDK cho Android — 8 bước
 
-> **Bản đang chuẩn bị phát hành: `1.2.0`.** Hướng dẫn dưới đây dùng bản public `1.1.0`
-> cho đến khi `1.2.0` xuất hiện trên Maven Central. Quy trình ký và publish: [PUBLISHING.md](PUBLISHING.md).
+> **Từ `1.2.0` SDK đổi tọa độ thành `io.github.idaplatform:fpt-cmp-sdk`** (bản ≤ `1.1.0` ở
+> `io.github.idaflatform:fpt-consent-sdk`). Chỉ dùng `1.2.0` khi bản này đã xuất hiện trên Maven Central.
+> Maintainer — quy trình ký và publish: [PUBLISHING.md](PUBLISHING.md).
 
 Tài liệu dành cho **lập trình viên app**. SDK phát hành trên **Maven Central** — public, không cần tài
 khoản, không cần khai URL repository riêng. Mẫu code có cả **Java** và **Kotlin**, cấu hình Gradle có cả
@@ -11,7 +12,7 @@ Cần 2 thông tin:
 
 | Thông tin | Ví dụ |
 |---|---|
-| Dependency | `io.github.idaflatform:fpt-consent-sdk:1.1.0` |
+| Dependency | `io.github.idaplatform:fpt-cmp-sdk:1.2.0` |
 | `codeConfig` (integration key của Collection Point) | `cp_xxx::t_yyy` |
 
 > **Phiên bản hiện tại: `1.1.0`.** Các bước dưới đây dùng 3 tính năng có từ `1.1.0`: **tự khởi tạo từ
@@ -94,7 +95,7 @@ Nexus làm mirror, khai thêm URL mirror đó theo hướng dẫn nội bộ —
 
 ```groovy
 dependencies {
-    implementation 'io.github.idaflatform:fpt-consent-sdk:1.1.0'
+    implementation 'io.github.idaplatform:fpt-cmp-sdk:1.2.0'
 }
 ```
 
@@ -102,7 +103,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    implementation("io.github.idaflatform:fpt-consent-sdk:1.1.0")
+    implementation("io.github.idaplatform:fpt-cmp-sdk:1.2.0")
 }
 ```
 
@@ -530,7 +531,7 @@ SDK chưa có plugin riêng; app bọc `ConsentFormView` thành platform view / 
 
 | Lỗi | Nguyên nhân | Xử lý |
 |---|---|---|
-| `Could not find io.github.idaflatform:fpt-consent-sdk:<version>` | thiếu `mavenCentral()`, sai groupId, hoặc version không tồn tại | xem lại bước 1–2; hỏi đội CMP version hiện có |
+| `Could not find io.github.idaplatform:fpt-cmp-sdk:<version>` | thiếu `mavenCentral()`, sai groupId, hoặc version không tồn tại | xem lại bước 1–2; hỏi đội CMP version hiện có |
 | `Build was configured to prefer settings repositories` | project dùng `dependencyResolutionManagement` nhưng repo lại khai ở `build.gradle` | chuyển khai báo repo vào `settings.gradle` |
 | `Could not resolve ... repo1.maven.org` | mạng công ty chặn Maven Central | dùng URL mirror Nexus nội bộ, dependency giữ nguyên |
 | `minSdkVersion 16 cannot be smaller than version 21` | app có `minSdk` thấp hơn SDK | nâng `minSdk` lên 21 |

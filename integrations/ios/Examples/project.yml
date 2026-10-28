@@ -6,7 +6,7 @@ packages:
   CMPMobileBridge:
     path: ../Bridge
   ConsentCmp:
-    url: https://github.com/idaflatform/fpt-consent-sdk-ios.git
+    url: https://github.com/idaplatform/fpt-consent-sdk-ios.git
     from: 1.1.0
 targets:
   ObjectiveCExample:

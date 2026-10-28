@@ -7,7 +7,7 @@ android {
     testOptions { unitTests.includeAndroidResources=true }
 }
 dependencies {
-    api "io.github.idaflatform:fpt-consent-sdk:${rootProject.property('cmpSdkVersion')}"
+    api "io.github.idaplatform:fpt-cmp-sdk:${rootProject.property('cmpSdkVersion')}"
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.11.0'
     testImplementation 'junit:junit:4.13.2'

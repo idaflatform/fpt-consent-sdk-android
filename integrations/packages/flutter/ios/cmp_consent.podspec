@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name='cmp_consent'
   s.version='0.1.0'
   s.summary='Native CMP forms for Flutter.'
-  s.homepage='https://github.com/idaflatform/fpt-consent-sdk-ios'
+  s.homepage='https://github.com/idaplatform/fpt-consent-sdk-ios'
   s.license={:type=>'Apache-2.0'}
   s.author='FPT CMP'
   s.source={:path=>'.'}

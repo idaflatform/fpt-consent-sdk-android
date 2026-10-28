@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "fpt-consent-sdk"
-include ':consent-cmp'
+rootProject.name = "fpt-cmp-sdk"
+include ':fpt-cmp'
 // App demo de cai thu SDK len may (build ra APK). Khong publish.
 include ':sample'
