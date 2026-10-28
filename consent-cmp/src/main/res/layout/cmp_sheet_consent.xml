@@ -3,7 +3,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/cmp_bg_sheet">
+    android:background="@drawable/cmp_bg_sheet" android:tag="cmp:cmp_bg_sheet:">
 
     <ScrollView
         android:id="@+id/cmp_scroll_content"

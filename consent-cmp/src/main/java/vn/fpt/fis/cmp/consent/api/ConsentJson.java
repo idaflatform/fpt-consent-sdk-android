@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import vn.fpt.fis.cmp.consent.ConsentException;
 import vn.fpt.fis.cmp.consent.model.ConsentConfig;
 import vn.fpt.fis.cmp.consent.model.ConsentField;
 import vn.fpt.fis.cmp.consent.model.ConsentItem;
@@ -26,6 +27,13 @@ public final class ConsentJson {
     public static JSONObject unwrap(JSONObject root) {
         JSONObject data = root.optJSONObject("data");
         return data != null ? data : root;
+    }
+
+    /** Only the canonical appearance field from the config response is supported. */
+    public static JSONObject appearanceFromConfig(JSONObject response) throws ConsentException {
+        JSONObject appearance = unwrap(response).optJSONObject("appearance");
+        if (appearance == null) throw new ConsentException("Config response has no valid appearance object");
+        return appearance;
     }
 
     public static ConsentConfig parseConfig(JSONObject json) {

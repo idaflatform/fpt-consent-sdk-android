@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Nen link "Thu gon" / "An danh sach" cho API < 26: doi mau khi bam, KHONG dung ripple.
+  Android 7.x abort RenderThread khi ripple chay trong PlatformView cua Flutter / React Native
+  ("Trying to start new animators on RippleDrawable without an animation handle").
+  API 26+ dung ripple trong drawable-v26/.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="#1F000000" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+    <item android:drawable="@android:color/transparent" />
+</selector>

@@ -1,0 +1,9 @@
+apply plugin:'com.android.library'
+android {
+    namespace 'vn.fpt.cmp.react'
+    compileSdk rootProject.ext.has('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 35
+    defaultConfig { minSdk rootProject.ext.has('minSdkVersion') ? rootProject.ext.minSdkVersion : 24 }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_11;targetCompatibility JavaVersion.VERSION_11 }
+}
+repositories {google();mavenCentral();if(System.getenv('CMP_MAVEN_REPO'))maven{url=uri(System.getenv('CMP_MAVEN_REPO'))};if(System.getenv('CMP_BRIDGE_MAVEN_REPO'))maven{url=uri(System.getenv('CMP_BRIDGE_MAVEN_REPO'))}}
+dependencies {implementation 'com.facebook.react:react-android';implementation 'vn.fpt.cmp:mobile-bridge:0.1.0'}

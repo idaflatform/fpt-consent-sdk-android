@@ -102,12 +102,19 @@ public class ConsentSheetFragment extends BottomSheetDialogFragment {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (!completed && ConsentCmp.isInitialized()) {
-            ConsentListener listener = ConsentCmp.get().listener();
-            if (listener != null) {
-                listener.onDismissed();
-            }
+        // Xoay man hinh cung di qua day nhung sheet se duoc tao lai: khong bao "dong" va giu listener.
+        if (getActivity() != null && getActivity().isChangingConfigurations()) {
+            return;
         }
+        if (!ConsentCmp.isInitialized()) {
+            return;
+        }
+        ConsentListener listener = ConsentCmp.get().listener();
+        if (!completed && listener != null) {
+            listener.onDismissed();
+        }
+        // Sheet da dong han: bo listener de singleton khong giu Activity cua app.
+        ConsentCmp.get().releaseListener(listener);
     }
 
     private void notifyError(ConsentException error) {

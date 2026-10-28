@@ -1,0 +1,17 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'vn.fpt.cmp.examples.java'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'vn.fpt.cmp.examples.java'; minSdk 21; targetSdk 35
+        versionCode 1; versionName '0.1.0'
+        manifestPlaceholders = [cmpCodeConfig: providers.gradleProperty('cmpCodeConfig').getOrElse(''), cmpBaseUrl: providers.gradleProperty('cmpBaseUrl').getOrElse('https://cmp.biznext.vn')]
+    }
+    buildTypes { release { minifyEnabled true; proguardFiles getDefaultProguardFile('proguard-android-optimize.txt') } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_11; targetCompatibility JavaVersion.VERSION_11 }
+}
+dependencies {
+    implementation "io.github.idaflatform:fpt-consent-sdk:${rootProject.property('cmpSdkVersion')}"
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.11.0'
+}

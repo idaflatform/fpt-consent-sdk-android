@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Track switch dang "iOS": ranh day 48x26dp, thumb nam trong; mau do ConsentFormView tint. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@android:color/white" />
+    <corners android:radius="13dp" />
+    <size android:width="48dp" android:height="26dp" />
+</shape>

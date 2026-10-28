@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:label="CMP Compose Example" android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" android:allowBackup="false">
+        <meta-data android:name="vn.fpt.cmp.codeConfig" android:value="${cmpCodeConfig}" />
+        <meta-data android:name="vn.fpt.cmp.baseUrl" android:value="${cmpBaseUrl}" />
+        <activity android:name=".MainActivity" android:exported="true" android:windowSoftInputMode="adjustResize">
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+        </activity>
+    </application>
+</manifest>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-cmp-consent" version="0.1.0">
+ <name>CmpConsent</name>
+ <js-module src="www/cmp.js" name="CmpConsent"><clobbers target="CmpConsent"/></js-module>
+ <platform name="android">
+  <config-file target="res/xml/config.xml" parent="/*"><feature name="CmpConsent"><param name="android-package" value="vn.fpt.cmp.cordova.CmpConsentPlugin"/></feature></config-file>
+  <source-file src="src/android/CmpConsentPlugin.java" target-dir="src/vn/fpt/cmp/cordova"/>
+  <framework src="src/android/cmp.gradle" custom="true" type="gradleReference"/>
+ </platform>
+ <platform name="ios">
+  <config-file target="config.xml" parent="/*"><feature name="CmpConsent"><param name="ios-package" value="CmpConsentPlugin"/></feature></config-file>
+  <source-file src="src/ios/CmpConsentPlugin.m"/>
+  <framework src="CMPMobileBridge" type="podspec" spec="~&gt; 0.1"/>
+ </platform>
+</plugin>

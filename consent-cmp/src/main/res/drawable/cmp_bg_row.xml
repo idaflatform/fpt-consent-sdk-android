@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hang tieu de muc dich (bam de mo/dong): doi mau khi bam, khong ripple. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <color android:color="#0F000000" />
+    </item>
+    <item android:drawable="@android:color/transparent" />
+</selector>

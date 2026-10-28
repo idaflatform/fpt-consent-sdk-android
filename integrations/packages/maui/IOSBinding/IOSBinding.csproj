@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><TargetFramework>net9.0-ios</TargetFramework><SupportedOSPlatformVersion>14.0</SupportedOSPlatformVersion><IsBindingProject>true</IsBindingProject><Nullable>enable</Nullable></PropertyGroup>
+ <ItemGroup>
+  <ObjcBindingApiDefinition Include="ApiDefinition.cs" />
+  <NativeReference Include="$(CmpBridgeXCFramework)"><Kind>Framework</Kind><ForceLoad>true</ForceLoad><SmartLink>true</SmartLink></NativeReference>
+  <NativeReference Include="$(CmpSdkXCFramework)"><Kind>Framework</Kind><ForceLoad>true</ForceLoad><SmartLink>true</SmartLink></NativeReference>
+ </ItemGroup>
+ <Target Name="CheckArtifacts" BeforeTargets="PrepareForBuild"><Error Condition="!Exists('$(CmpBridgeXCFramework)') Or !Exists('$(CmpSdkXCFramework)')" Text="Set CmpBridgeXCFramework and CmpSdkXCFramework to built Apple frameworks." /></Target>
+</Project>

@@ -1,0 +1,9 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CMP Capacitor</title></head>
+<body><h1>CMP Capacitor</h1><label>Integration key <input id="key"></label><br><label>Origin <input id="url" value="https://cmp.biznext.vn"></label><br><label>Email <input id="email" value="demo@example.invalid"></label><p><button id="standalone">Consent độc lập</button><button id="register">Đăng ký native</button></p><pre id="result"></pre>
+<script type="module">
+import {presentConsent} from '@fpt-cmp/capacitor-consent';
+for(const [id,embedded] of [['standalone',false],['register',true]])document.getElementById(id).onclick=async()=>{
+ document.querySelectorAll('button').forEach(b=>b.disabled=true);
+ try{const result=await presentConsent({codeConfig:document.getElementById('key').value,baseUrl:document.getElementById('url').value,embedded,values:{Email:document.getElementById('email').value}});document.getElementById('result').textContent=JSON.stringify(result,null,2);}catch(e){document.getElementById('result').textContent=String(e);}finally{document.querySelectorAll('button').forEach(b=>b.disabled=false);}
+};
+</script></body></html>

@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "CMP expo-latest",
+    "slug": "cmp-expo-latest",
+    "version": "1.0.0",
+    "android": {
+      "package": "vn.fpt.cmp.expolatest"
+    },
+    "plugins": [
+      "@fpt-cmp/react-native-consent"
+    ],
+    "newArchEnabled": true
+  }
+}

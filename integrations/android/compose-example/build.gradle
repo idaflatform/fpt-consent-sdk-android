@@ -1,0 +1,20 @@
+plugins { id 'com.android.application'; id 'org.jetbrains.kotlin.android'; id 'org.jetbrains.kotlin.plugin.compose' }
+android {
+    namespace 'vn.fpt.cmp.examples.compose'; compileSdk 35
+    defaultConfig {
+        applicationId 'vn.fpt.cmp.examples.compose'; minSdk 21; targetSdk 35; versionCode 1; versionName '0.1.0'
+        manifestPlaceholders = [cmpCodeConfig: providers.gradleProperty('cmpCodeConfig').getOrElse(''), cmpBaseUrl: providers.gradleProperty('cmpBaseUrl').getOrElse('https://cmp.biznext.vn')]
+    }
+    buildFeatures { compose true }
+    buildTypes { release { minifyEnabled true; proguardFiles getDefaultProguardFile('proguard-android-optimize.txt') } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_11; targetCompatibility JavaVersion.VERSION_11 }
+    kotlinOptions { jvmTarget='11' }
+}
+dependencies {
+    implementation "io.github.idaflatform:fpt-consent-sdk:${rootProject.property('cmpSdkVersion')}"
+    implementation platform('androidx.compose:compose-bom:2024.09.03')
+    implementation 'androidx.activity:activity-compose:1.9.2'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.11.0'
+}

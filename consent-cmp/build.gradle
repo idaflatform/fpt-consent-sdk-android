@@ -19,9 +19,14 @@ android {
         }
     }
 
+    // Bytecode Java 11 (khong phai 17) de app dung AGP / D8 cu van dex duoc thu vien.
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
     }
 
     // KHONG khai android.publishing.singleVariant('release') o day: plugin
@@ -38,6 +43,10 @@ dependencies {
     implementation 'androidx.core:core:1.13.1'
     // BottomSheetDialogFragment + SwitchMaterial
     implementation 'com.google.android.material:material:1.11.0'
+
+    // ConsentStateTest chay tren JVM; truoc day thieu nen test khong bien dich duoc.
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.14.1'
 }
 
 mavenPublishing {
@@ -52,12 +61,12 @@ mavenPublishing {
 
     // Chi ky khi da cau hinh khoa GPG. Nho vay `publishToMavenLocal` chay duoc de kiem tra artifact
     // ngay ca khi chua tao khoa; con khi day len Central thi bat buoc phai co (Central tu choi
-    // artifact khong chu ky). Cach cau hinh: tools/setup-signing.sh
+    // artifact khong chu ky). Cach cau hinh: PUBLISHING.md
     if (project.findProperty('signingInMemoryKey') || project.findProperty('signing.keyId')) {
         signAllPublications()
     } else {
         logger.warn('[consent-cmp] Chua co khoa GPG -> BO QUA ky artifact. ' +
-                'Chay tools/setup-signing.sh truoc khi publish len Maven Central.')
+                'Xem PUBLISHING.md truoc khi publish len Maven Central.')
     }
 
     coordinates(
@@ -72,7 +81,7 @@ mavenPublishing {
                 '(purposes, data fields, third parties) with required-item validation, and submits ' +
                 'the user decision as an auditable consent record.'
         inceptionYear = '2026'
-        url = project.findProperty('sdkProjectUrl') ?: 'https://github.com/idaflatform/fpt-consent-sdk'
+        url = project.findProperty('sdkProjectUrl') ?: 'https://github.com/idaflatform/fpt-consent-sdk-android'
 
         licenses {
             license {

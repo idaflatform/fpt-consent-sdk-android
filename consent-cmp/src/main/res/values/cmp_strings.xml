@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cmp_section_title">Đồng ý xử lý dữ liệu</string>
-    <string name="cmp_list_title">Danh sách sự đồng ý</string>
+    <string name="cmp_list_title">Nội dung chia sẻ dữ liệu</string>
     <string name="cmp_hide_list">Ẩn danh sách</string>
     <string name="cmp_show_list">Hiện danh sách</string>
     <string name="cmp_collapse">Thu gọn</string>
     <string name="cmp_expand">Mở rộng</string>
     <string name="cmp_accept_all">Đồng ý tất cả</string>
     <string name="cmp_reject_all">Từ chối tất cả</string>
-    <string name="cmp_submit">Đồng ý</string>
+    <string name="cmp_submit">Lưu lựa chọn</string>
     <string name="cmp_mandatory">Bắt buộc</string>
     <string name="cmp_sensitive">Nhạy cảm</string>
     <string name="cmp_loading">Đang tải cấu hình…</string>
@@ -19,4 +19,15 @@
     <string name="cmp_close">Đóng</string>
     <string name="cmp_error_no_config">Chưa tải được cấu hình consent, vui lòng thử lại</string>
     <string name="cmp_error_not_initialized">SDK consent chưa được khởi tạo</string>
+
+    <!-- Giao dien accordion -->
+    <string name="cmp_view_purposes">Xem %1$d mục đích</string>
+    <string name="cmp_show_more">Xem thêm</string>
+    <string name="cmp_shared_with">Chia sẻ với:</string>
+    <string name="cmp_fields_count">Trường dữ liệu · %1$d/%2$d</string>
+    <string name="cmp_counter">%1$d/%2$d</string>
+    <string name="cmp_select_all">Chọn tất cả</string>
+    <string name="cmp_deselect_all">Bỏ chọn tất cả</string>
+    <string name="cmp_selected_summary">%1$d / %2$d mục đích đã chọn</string>
+    <string name="cmp_required_mark">" *"</string>
 </resources>

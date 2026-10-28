@@ -1,0 +1,10 @@
+{
+  "name": "@fpt-cmp/react-native-consent",
+  "version": "0.1.0",
+  "description": "Native CMP consent modal and registration flow for Android and iOS",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "files": ["src", "android", "ios", "CmpConsent.podspec", "react-native.config.js", "app.plugin.js"],
+  "peerDependencies": {"react": ">=18", "react-native": ">=0.76"},
+  "license": "Apache-2.0"
+}

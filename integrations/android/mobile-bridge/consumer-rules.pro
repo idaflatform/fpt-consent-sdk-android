@@ -1,0 +1,2 @@
+-keep public class vn.fpt.cmp.bridge.** { public *; }
+-keep public interface vn.fpt.cmp.bridge.** { *; }

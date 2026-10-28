@@ -1,0 +1,17 @@
+{
+  "name": "cmp-expo-old",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "android": "expo run:android",
+    "start": "expo start --dev-client",
+    "prebuild": "expo prebuild --platform android --no-install"
+  },
+  "dependencies": {
+    "expo": "52.0.49",
+    "react": "18.3.1",
+    "react-native": "0.76.9",
+    "@fpt-cmp/react-native-consent": "file:../../packages/react-native"
+  }
+}

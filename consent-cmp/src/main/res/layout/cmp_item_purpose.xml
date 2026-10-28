@@ -1,84 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Mot muc dich xu ly du lieu: ten + toggle + mo ta + danh sach truong du lieu. -->
+<!--
+  Mot muc dich dang accordion:
+    hang tieu de (bam de mo/dong) = chevron + ten (+ mo ta 1 dong khi dong) + "x/y" (man rong) + switch
+    phan mo rong = mo ta (3 dong + "Xem them") + "Chia se voi" + "Truong du lieu · x/y" + "Chon tat ca"
+                   + cac truong du lieu (chip o man hep / checkbox 2 cot o man rong).
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/cmp_space_md"
-    android:background="@drawable/cmp_bg_card"
-    android:orientation="vertical"
-    android:padding="@dimen/cmp_space_md">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingEnd="@dimen/cmp_space_lg">
 
-        <TextView
-            android:id="@+id/cmp_tv_purpose_label"
+        <!-- Ca vung chevron + ten la 1 nut mo/dong, vung cham >= 48dp -->
+        <LinearLayout
+            android:id="@+id/cmp_purpose_head"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/cmp_text_primary"
-            android:textSize="@dimen/cmp_text_purpose"
-            android:textStyle="bold" />
+            android:background="@drawable/cmp_bg_row"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/cmp_touch"
+            android:orientation="horizontal"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp" android:tag="cmp:cmp_bg_row:">
+
+            <ImageView
+                android:id="@+id/cmp_iv_chevron"
+                android:layout_width="@dimen/cmp_body_indent"
+                android:layout_height="24dp"
+                android:importantForAccessibility="no"
+                android:scaleType="center"
+                android:src="@drawable/cmp_ic_chevron" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/cmp_tv_purpose_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/cmp_text_primary"
+                    android:textSize="@dimen/cmp_text_purpose"
+                    android:textStyle="bold" android:tag="cmp::cmp_text_primary" />
+
+                <TextView
+                    android:id="@+id/cmp_tv_purpose_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/cmp_text_secondary"
+                    android:textSize="@dimen/cmp_text_small"
+                    android:visibility="gone" android:tag="cmp::cmp_text_secondary" />
+            </LinearLayout>
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/cmp_tv_purpose_badge"
+            android:id="@+id/cmp_tv_purpose_counter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/cmp_space_xs"
-            android:background="@drawable/cmp_bg_chip"
-            android:paddingStart="@dimen/cmp_space_sm"
-            android:paddingTop="2dp"
-            android:paddingEnd="@dimen/cmp_space_sm"
-            android:paddingBottom="2dp"
-            android:text="@string/cmp_mandatory"
-            android:textColor="@color/cmp_chip_text"
-            android:textSize="@dimen/cmp_text_chip"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/cmp_btn_purpose_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:padding="@dimen/cmp_space_xs"
-            android:text="@string/cmp_collapse"
-            android:textColor="@color/cmp_link_alt"
-            android:textSize="@dimen/cmp_text_link" />
+            android:layout_marginStart="@dimen/cmp_space_sm"
+            android:textColor="@color/cmp_link"
+            android:textSize="@dimen/cmp_text_small"
+            android:textStyle="bold"
+            android:visibility="gone" android:tag="cmp::cmp_link" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/cmp_sw_purpose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/cmp_space_xs"
+            android:layout_marginStart="@dimen/cmp_space_sm"
             android:minWidth="0dp"
             android:minHeight="0dp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/cmp_tv_purpose_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/cmp_space_xs"
-        android:textColor="@color/cmp_primary"
-        android:textSize="@dimen/cmp_text_body"
-        android:visibility="gone" />
-
-    <View
-        android:id="@+id/cmp_divider"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="@dimen/cmp_space_md"
-        android:background="@drawable/cmp_divider_dashed"
-        android:layerType="software" />
-
     <LinearLayout
-        android:id="@+id/cmp_container_fields"
+        android:id="@+id/cmp_purpose_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/cmp_space_md"
-        android:orientation="vertical" />
+        android:orientation="vertical"
+        android:paddingStart="@dimen/cmp_body_indent"
+        android:paddingEnd="@dimen/cmp_space_lg"
+        android:paddingBottom="14dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/cmp_tv_purpose_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lineSpacingExtra="2dp"
+            android:textColor="@color/cmp_text_primary"
+            android:textSize="@dimen/cmp_text_small"
+            android:visibility="gone" android:tag="cmp::cmp_text_primary" />
+
+        <TextView
+            android:id="@+id/cmp_btn_show_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cmp_bg_link"
+            android:paddingTop="@dimen/cmp_space_xs"
+            android:paddingBottom="@dimen/cmp_space_xs"
+            android:text="@string/cmp_show_more"
+            android:textColor="@color/cmp_link"
+            android:textSize="@dimen/cmp_text_small"
+            android:textStyle="bold"
+            android:visibility="gone" android:tag="cmp:cmp_bg_link:cmp_link" />
+
+        <!-- Man rong: "Chia se voi" va "Chon tat ca" cung 1 hang (ConsentFormView doi orientation) -->
+        <LinearLayout
+            android:id="@+id/cmp_purpose_meta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <vn.fpt.fis.cmp.consent.ui.CmpFlowLayout
+                android:id="@+id/cmp_container_parties"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/cmp_space_sm"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/cmp_fields_head"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="36dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/cmp_tv_fields_count"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/cmp_text_primary"
+                    android:textSize="@dimen/cmp_text_small"
+                    android:textStyle="bold" android:tag="cmp::cmp_text_primary" />
+
+                <TextView
+                    android:id="@+id/cmp_btn_select_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cmp_bg_link"
+                    android:padding="@dimen/cmp_space_xs"
+                    android:text="@string/cmp_select_all"
+                    android:textColor="@color/cmp_link"
+                    android:textSize="@dimen/cmp_text_small"
+                    android:textStyle="bold" android:tag="cmp:cmp_bg_link:cmp_link" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <vn.fpt.fis.cmp.consent.ui.CmpFlowLayout
+            android:id="@+id/cmp_container_fields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cmp_space_xs"
+            android:visibility="gone" />
+    </LinearLayout>
 </LinearLayout>

@@ -1,0 +1,6 @@
+{
+ "name":"@fpt-cmp/capacitor-consent","version":"0.1.0","type":"module","main":"src/index.js","types":"src/index.d.ts",
+ "files":["src","android","ios","CmpConsentCapacitor.podspec"],
+ "peerDependencies":{"@capacitor/core":">=6"},
+ "capacitor":{"android":{"src":"android"},"ios":{"src":"ios"}}
+}

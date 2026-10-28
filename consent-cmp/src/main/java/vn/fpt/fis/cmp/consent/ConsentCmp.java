@@ -6,6 +6,7 @@ import android.os.Looper;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 import androidx.fragment.app.FragmentManager;
 
 import org.json.JSONException;
@@ -47,6 +48,20 @@ public final class ConsentCmp {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
 
+    private final AppearanceRepository appearances;
+    private volatile ConsentAppearance appearance = ConsentAppearance.defaults();
+    public ConsentAppearance appearance() { return appearance; }
+    public AppearanceRepository appearanceRepository() { return appearances; }
+    public void getAppearance(ConsentCallback<ConsentAppearance> callback) {
+        executor.execute(() -> { appearance = appearances.get(); postSuccess(callback, appearance); });
+    }
+    public void refreshAppearance(ConsentCallback<ConsentAppearance> callback) {
+        executor.execute(() -> { appearance = appearances.refresh(); postSuccess(callback, appearance); });
+    }
+    public void clearAppearanceCache() {
+        executor.execute(() -> { appearances.clear(); appearance = ConsentAppearance.defaults(); });
+    }
+
     private volatile ConsentConfig cachedConfig;
     /** Chuoi mo ta app, tinh mot lan roi dung lai. */
     private volatile String appSource;
@@ -58,6 +73,7 @@ public final class ConsentCmp {
         this.options = options;
         this.api = new ConsentApiClient(options);
         this.store = new ConsentStore(this.appContext);
+        this.appearances = new AppearanceRepository(this.appContext, options, api);
     }
 
     /**
@@ -157,7 +173,9 @@ public final class ConsentCmp {
                         String cached = store.loadConfig(options.configTtlMs, System.currentTimeMillis());
                         if (cached != null) {
                             try {
-                                ConsentConfig config = ConsentJson.parseConfig(new JSONObject(cached));
+                                JSONObject json = new JSONObject(cached);
+                                appearance = appearances.fromConfig(json);
+                                ConsentConfig config = ConsentJson.parseConfig(json);
                                 cachedConfig = config;
                                 postSuccess(callback, config);
                                 return;
@@ -168,6 +186,7 @@ public final class ConsentCmp {
                         }
                     }
                     JSONObject json = api.fetchConfigJson();
+                    appearance = appearances.fromConfig(json);
                     ConsentConfig config = ConsentJson.parseConfig(json);
                     if (options.cacheConfig) {
                         store.saveConfig(json.toString(), System.currentTimeMillis());
@@ -175,6 +194,7 @@ public final class ConsentCmp {
                     cachedConfig = config;
                     postSuccess(callback, config);
                 } catch (ConsentException e) {
+                    appearance = appearances.cachedOrDefault();
                     // Mat mang: dung tam ban cache cu (neu co) de nguoi dung van tra loi duoc.
                     ConsentConfig fallback = e.httpStatus == 0 ? loadCachedConfig() : null;
                     if (fallback != null) {
@@ -201,7 +221,9 @@ public final class ConsentCmp {
             return null;
         }
         try {
-            return ConsentJson.parseConfig(new JSONObject(raw));
+            JSONObject json = new JSONObject(raw);
+            appearance = appearances.fromConfig(json);
+            return ConsentJson.parseConfig(json);
         } catch (JSONException e) {
             return null;
         }
@@ -359,6 +381,19 @@ public final class ConsentCmp {
     @Nullable
     public ConsentListener listener() {
         return listener;
+    }
+
+    /**
+     * Bo listener khi bottom sheet da dong han, de singleton khong giu Activity cua app (listener
+     * thuong la anonymous class tro toi Activity). Chi bo khi van la listener do — app co the da
+     * goi {@link #show} lai voi listener moi.
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @MainThread
+    public void releaseListener(@Nullable ConsentListener expected) {
+        if (listener == expected) {
+            listener = null;
+        }
     }
 
     // ==================== Trang thai da luu ====================

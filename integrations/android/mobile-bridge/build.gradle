@@ -1,0 +1,21 @@
+plugins { id 'com.android.library'; id 'maven-publish' }
+android {
+    namespace 'vn.fpt.cmp.bridge'; compileSdk 35
+    defaultConfig { minSdk 21; consumerProguardFiles 'consumer-rules.pro' }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_11; targetCompatibility JavaVersion.VERSION_11 }
+    publishing { singleVariant('release') { withSourcesJar() } }
+    testOptions { unitTests.includeAndroidResources=true }
+}
+dependencies {
+    api "io.github.idaflatform:fpt-consent-sdk:${rootProject.property('cmpSdkVersion')}"
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.11.0'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.14.1'
+}
+afterEvaluate {
+    publishing {
+        publications { release(MavenPublication) { from components.release; groupId='vn.fpt.cmp';artifactId='mobile-bridge';version='0.1.0' } }
+        repositories { maven { name='integration';url=rootProject.layout.buildDirectory.dir('repo') } }
+    }
+}
