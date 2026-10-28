@@ -2,7 +2,7 @@
 
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), version theo [SemVer](https://semver.org/).
 
-## [1.2.0] - unreleased
+## [1.2.0] - 2026-10-28
 
 ### Changed — breaking cho cách khai dependency
 - Đổi tọa độ Maven: `io.github.idaflatform:fpt-consent-sdk` → **`io.github.idaplatform:fpt-cmp-sdk`**.
