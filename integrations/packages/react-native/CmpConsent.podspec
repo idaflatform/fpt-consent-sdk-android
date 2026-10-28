@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
  s.name='CmpConsent'
  s.version='0.1.0'
  s.summary='React Native bridge to CMP native consent screen.'
- s.homepage='https://github.com/idaflatform/fpt-consent-sdk-ios'
+ s.homepage='https://github.com/idaplatform/fpt-consent-sdk-ios'
  s.license={:type=>'Apache-2.0'}
  s.author='FPT CMP'
  s.source={:path=>'.'}

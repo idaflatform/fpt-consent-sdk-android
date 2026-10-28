@@ -46,13 +46,13 @@ android {
     compileOptions { sourceCompatibility=JavaVersion.VERSION_11; targetCompatibility=JavaVersion.VERSION_11 }
     kotlinOptions { jvmTarget='11' }
 }
-dependencies { implementation "io.github.idaflatform:fpt-consent-sdk:${System.getenv('CMP_SDK_VERSION') ?: '1.2.0'}" }
+dependencies { implementation "io.github.idaplatform:fpt-cmp-sdk:${System.getenv('CMP_SDK_VERSION') ?: '1.2.0'}" }
 ''',encoding='utf-8')
 (p/'ios/cmp_consent.podspec').write_text('''Pod::Spec.new do |s|
   s.name='cmp_consent'
   s.version='0.1.0'
   s.summary='Native CMP forms for Flutter.'
-  s.homepage='https://github.com/idaflatform/fpt-consent-sdk-ios'
+  s.homepage='https://github.com/idaplatform/fpt-consent-sdk-ios'
   s.license={:type=>'Apache-2.0'}
   s.author='FPT CMP'
   s.source={:path=>'.'}
@@ -103,7 +103,7 @@ post_install do |installer|
 end
 ''',encoding='utf-8')
 # Native examples ship a wrapper so they do not require a global Gradle installation.
-sdk=root.parent if (root.parent/'consent-cmp').is_dir() else root.parent/'fpt-consent-sdk-android'
+sdk=root.parent if (root.parent/'fpt-cmp').is_dir() else root.parent/'fpt-consent-sdk-android'
 for name in ['gradlew','gradlew.bat','gradle/wrapper/gradle-wrapper.jar','gradle/wrapper/gradle-wrapper.properties']:
     dest=root/'android'/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(sdk/name,dest)
 print('Configured independent Android and Flutter hosts.')

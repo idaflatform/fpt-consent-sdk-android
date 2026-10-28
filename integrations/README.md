@@ -23,7 +23,7 @@ chứa adapter và ứng dụng mẫu cho các nền tảng.
 
 ## SDK và phiên bản
 
-Android dùng Maven `io.github.idaflatform:fpt-consent-sdk:1.2.0`. Ví dụ không
+Android dùng Maven `io.github.idaplatform:fpt-cmp-sdk:1.2.0`. Ví dụ không
 includeBuild SDK. Bản 1.2.0 đã đóng gói cục bộ không đồng nghĩa đã lên Maven
 Central. iOS Swift Package trỏ từ 1.1.0; podspec ConsentCmp 1.2.0 mới được bổ sung
 ở repository iOS để chuẩn bị CocoaPods. Pod/plugin chưa được phát hành công khai.
@@ -36,8 +36,8 @@ và CMP_IOS_SDK_PATH tới các thư mục này. Đây là artifact/snapshot ki�
 không phải xác nhận đã được phát hành trên registry công khai.
 
 Checkout Git chỉ chứa source. Build SDK lõi ở root repository bằng
-`./gradlew :consent-cmp:publishAllPublicationsToLocalRepoRepository`, rồi đặt
-`CMP_MAVEN_REPO` tới `consent-cmp/build/repo` bằng đường dẫn tuyệt đối. Build
+`./gradlew :fpt-cmp:publishAllPublicationsToLocalRepoRepository`, rồi đặt
+`CMP_MAVEN_REPO` tới `fpt-cmp/build/repo` bằng đường dẫn tuyệt đối. Build
 bridge từ `integrations/android` như dưới đây và đặt `CMP_BRIDGE_MAVEN_REPO` tới
 repo bridge tương ứng. Checkout repository iOS cạnh repository Android hoặc
 truyền đường dẫn riêng qua `CMP_IOS_SDK_PATH`.

@@ -1,11 +1,11 @@
 # Phát hành Android SDK lên Maven Central
 
-Tọa độ bản chuẩn bị phát hành: `io.github.idaflatform:fpt-consent-sdk:1.2.0`.
+Tọa độ bản chuẩn bị phát hành: `io.github.idaplatform:fpt-cmp-sdk:1.2.0`.
 Chỉ dùng dependency này sau khi Maven Central đã công bố artifact.
 
 ## Cấu hình riêng trên máy
 
-Tài khoản Central Portal cần có quyền publish namespace `io.github.idaflatform`.
+Tài khoản Central Portal cần có quyền publish namespace `io.github.idaplatform`.
 Tạo user token tại Central Portal. Token gồm username và password riêng cho publishing.
 
 Đặt các property sau trong `$GRADLE_USER_HOME/gradle.properties` (trên máy build
@@ -28,21 +28,21 @@ Chạy từ thư mục gốc repository sau khi cấu hình Java 17 và Android 
 
 ```powershell
 . D:/Tools/env.ps1
-./gradlew.bat :consent-cmp:testDebugUnitTest :consent-cmp:lintRelease :consent-cmp:publishAllPublicationsToLocalRepoRepository --console=plain --max-workers=2
+./gradlew.bat :fpt-cmp:testDebugUnitTest :fpt-cmp:lintRelease :fpt-cmp:publishAllPublicationsToLocalRepoRepository --console=plain --max-workers=2
 ```
 
-Kiểm tra thư mục `consent-cmp/build/repo/io/github/idaflatform/fpt-consent-sdk/1.2.0`:
+Kiểm tra thư mục `fpt-cmp/build/repo/io/github/idaplatform/fpt-cmp-sdk/1.2.0`:
 AAR, POM, sources JAR và Javadoc JAR đều cần có chữ ký `.asc`.
 
 Sau khi xác nhận artifact và chữ ký, upload và tự động release:
 
 ```powershell
-./gradlew.bat :consent-cmp:publishAndReleaseToMavenCentral --console=plain --max-workers=2
+./gradlew.bat :fpt-cmp:publishAndReleaseToMavenCentral --console=plain --max-workers=2
 ```
 
 Xem trạng thái tại <https://central.sonatype.com/publishing/deployments>.
 Chỉ thông báo phát hành thành công khi deployment được publish và POM/AAR có thể tải tại:
-<https://repo.maven.apache.org/maven2/io/github/idaflatform/fpt-consent-sdk/1.2.0/>.
+<https://repo.maven.apache.org/maven2/io/github/idaplatform/fpt-cmp-sdk/1.2.0/>.
 Phiên bản đã publish không thể ghi đè.
 
 Tham khảo: [Sonatype requirements](https://central.sonatype.org/publish/requirements/),

@@ -79,3 +79,8 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
+
+# ==================== Signing secrets ====================
+*.gpg
+*.asc
+secring.*

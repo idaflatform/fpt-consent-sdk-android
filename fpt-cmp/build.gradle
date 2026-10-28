@@ -65,13 +65,13 @@ mavenPublishing {
     if (project.findProperty('signingInMemoryKey') || project.findProperty('signing.keyId')) {
         signAllPublications()
     } else {
-        logger.warn('[consent-cmp] Chua co khoa GPG -> BO QUA ky artifact. ' +
+        logger.warn('[fpt-cmp] Chua co khoa GPG -> BO QUA ky artifact. ' +
                 'Xem PUBLISHING.md truoc khi publish len Maven Central.')
     }
 
     coordinates(
-            project.findProperty('sdkGroupId') ?: 'io.github.idaflatform',
-            'fpt-consent-sdk',
+            project.findProperty('sdkGroupId') ?: 'io.github.idaplatform',
+            'fpt-cmp-sdk',
             project.findProperty('sdkVersion') ?: '1.0.0')
 
     pom {
@@ -81,7 +81,7 @@ mavenPublishing {
                 '(purposes, data fields, third parties) with required-item validation, and submits ' +
                 'the user decision as an auditable consent record.'
         inceptionYear = '2026'
-        url = project.findProperty('sdkProjectUrl') ?: 'https://github.com/idaflatform/fpt-consent-sdk-android'
+        url = project.findProperty('sdkProjectUrl') ?: 'https://github.com/idaplatform/fpt-consent-sdk-android'
 
         licenses {
             license {
@@ -92,8 +92,8 @@ mavenPublishing {
         }
         developers {
             developer {
-                id = project.findProperty('sdkDeveloperId') ?: 'idaflatform'
-                name = project.findProperty('sdkDeveloperName') ?: 'idaflatform'
+                id = project.findProperty('sdkDeveloperId') ?: 'idaplatform'
+                name = project.findProperty('sdkDeveloperName') ?: 'idaplatform'
                 url = project.findProperty('sdkProjectUrl') ?: ''
             }
         }

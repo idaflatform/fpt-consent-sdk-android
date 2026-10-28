@@ -11,7 +11,7 @@ Cần 2 thông tin:
 
 | Thông tin | Ví dụ |
 |---|---|
-| Dependency | `io.github.idaflatform:fpt-consent-sdk:1.1.0` |
+| Dependency | `io.github.idaplatform:fpt-cmp-sdk:1.2.0` |
 | `codeConfig` (integration key của Collection Point) | `cp_xxx::t_yyy` |
 
 > **Phiên bản hiện tại: `1.1.0`.** Các bước dưới đây dùng 3 tính năng có từ `1.1.0`: **tự khởi tạo từ
@@ -94,7 +94,7 @@ Nexus làm mirror, khai thêm URL mirror đó theo hướng dẫn nội bộ —
 
 ```groovy
 dependencies {
-    implementation 'io.github.idaflatform:fpt-consent-sdk:1.1.0'
+    implementation 'io.github.idaplatform:fpt-cmp-sdk:1.2.0'
 }
 ```
 
@@ -102,7 +102,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    implementation("io.github.idaflatform:fpt-consent-sdk:1.1.0")
+    implementation("io.github.idaplatform:fpt-cmp-sdk:1.2.0")
 }
 ```
 
@@ -530,7 +530,7 @@ SDK chưa có plugin riêng; app bọc `ConsentFormView` thành platform view / 
 
 | Lỗi | Nguyên nhân | Xử lý |
 |---|---|---|
-| `Could not find io.github.idaflatform:fpt-consent-sdk:<version>` | thiếu `mavenCentral()`, sai groupId, hoặc version không tồn tại | xem lại bước 1–2; hỏi đội CMP version hiện có |
+| `Could not find io.github.idaplatform:fpt-cmp-sdk:<version>` | thiếu `mavenCentral()`, sai groupId, hoặc version không tồn tại | xem lại bước 1–2; hỏi đội CMP version hiện có |
 | `Build was configured to prefer settings repositories` | project dùng `dependencyResolutionManagement` nhưng repo lại khai ở `build.gradle` | chuyển khai báo repo vào `settings.gradle` |
 | `Could not resolve ... repo1.maven.org` | mạng công ty chặn Maven Central | dùng URL mirror Nexus nội bộ, dependency giữ nguyên |
 | `minSdkVersion 16 cannot be smaller than version 21` | app có `minSdk` thấp hơn SDK | nâng `minSdk` lên 21 |
