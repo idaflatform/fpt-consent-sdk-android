@@ -5,11 +5,13 @@ qua cùng header `X-Consent-Integration` của nội dung consent. Appearance g�
 `schemaVersion=1`, `theme`, `typography` và `revision`. Khi tải form, SDK dùng chung
 response config, không gửi thêm request để lấy giao diện.
 
-Sau lần tải thành công, SDK dùng cache riêng theo base URL, API path và integration
-key, không TTL. `/config` vẫn tải nội dung consent như trước, nhưng không thay thế
-appearance đã lưu. Nếu thiếu/sai appearance, SDK dùng mặc định và form vẫn tải được;
-lần tải appearance lỗi được thử lại ở phiên SDK tiếp theo. `getAppearance` khi chưa
-có cache và `refreshAppearance` chủ động lấy `/config` để đọc `data.appearance`.
+Mỗi lần tải form thành công từ API, SDK tự áp dụng và lưu appearance hợp lệ mới
+ngay từ cùng response `/config`; không cần thao tác của người dùng hoặc request
+riêng. Appearance không đổi được dùng lại, không ghi cache hay tải lại font.
+Cache riêng theo base URL, API path và integration key, không TTL, là bản dự phòng
+khi offline hoặc response thiếu/sai appearance. Nếu chưa có bản tốt, SDK dùng mặc
+định; response hợp lệ ở lần tải kế tiếp vẫn được áp dụng trong cùng phiên.
+Nội dung consent lấy từ cache không ghi đè một appearance mới hơn đã lưu.
 
 Các form tự tải cấu hình áp dụng appearance tự động. App bind config thủ công
 có thể gọi `getAppearance(callback)` trước và `form.setAppearance(appearance)`.
@@ -19,14 +21,11 @@ ConsentCmp.get().getAppearance(new ConsentCallback<ConsentAppearance>() {
     public void onSuccess(ConsentAppearance appearance) { form.setAppearance(appearance); }
     public void onError(ConsentException error) { /* appearance errors use defaults */ }
 });
-// Khi app chủ động muốn nhận thay đổi mới của portal:
-ConsentCmp.get().refreshAppearance(callback);
-// Chỉ xóa giao diện; giữ nguyên visitor ID và consent:
-ConsentCmp.get().clearAppearanceCache();
 ```
 
-Refresh lỗi giữ bản tốt gần nhất. Callback trả appearance đang dùng (có thể là bản
-cũ hoặc mặc định); revision cho biết bản đã nhận. Form đang mở giữ snapshot cho đến
+Các API refresh/clear chỉ dành cho tích hợp cần điều khiển cache; app mẫu không
+đưa chúng thành nút cho khách hàng. Refresh lỗi giữ bản tốt gần nhất. Callback trả
+appearance đang dùng (có thể là bản cũ hoặc mặc định); revision cho biết bản đã nhận. Form đang mở giữ snapshot cho đến
 khi app reload/rebind hoặc gọi setAppearance. Clear và get/refresh được xếp hàng trên
 executor SDK. `clear()`/logout consent không xóa cache appearance.
 
@@ -43,8 +42,9 @@ và dùng chung giữa Collection Point; clear cấu hình không xóa file font
 profile khác dùng. Clear app data xóa toàn bộ; hành vi restore sau reinstall phụ
 thuộc backup của app chủ. Không đưa file font vào OS cache dễ bị thu hồi.
 
-App mẫu có nút cập nhật/xóa appearance. Fixture trong `integrations/tools` trả theme
-tím/font serif; `/requests` cho phép đếm request config.
+App mẫu tự lấy appearance khi tải form và dùng cache; không có nút cập nhật/xóa
+giao diện cho người dùng. Fixture trong `integrations/tools` trả theme tím/font serif;
+`/requests` cho phép đếm request config.
 
 Triển khai backend, gateway và portal hỗ trợ `data.appearance` trên `/consent/config`
 trước khi rollout SDK. Backend cũ thiếu appearance dùng giao diện mặc định. Việc

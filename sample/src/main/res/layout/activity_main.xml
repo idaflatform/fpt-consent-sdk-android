@@ -55,13 +55,6 @@
             android:layout_height="wrap_content"
             android:text="Xoá quyết định đã lưu" />
 
-        <Button android:id="@+id/btn_refresh_appearance"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Cập nhật giao diện từ portal" />
-        <Button android:id="@+id/btn_clear_appearance"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Xóa cache giao diện" />
-
         <TextView
             android:id="@+id/tv_result"
             android:layout_width="match_parent"

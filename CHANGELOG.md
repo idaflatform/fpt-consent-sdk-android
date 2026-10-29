@@ -2,6 +2,18 @@
 
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), version theo [SemVer](https://semver.org/).
 
+## [1.2.1] - 2026-10-29
+
+### Changed
+- Automatically apply changed appearance from each fresh consent config response without an additional API request.
+- Keep the last valid appearance as offline/invalid-response fallback; reuse unchanged appearance and prepared fonts.
+- Remove appearance refresh and cache-clear buttons from the sample app.
+
+### Fixed
+- Recover from initially missing appearance when a later config response is valid in the same session.
+- Prevent older cached consent content from downgrading a newer theme.
+- Compare appearance independently of JSON object key order and detect changed tokens even when revision is unchanged.
+
 ## [1.2.0] - 2026-10-28
 
 ### Changed — breaking cho cách khai dependency

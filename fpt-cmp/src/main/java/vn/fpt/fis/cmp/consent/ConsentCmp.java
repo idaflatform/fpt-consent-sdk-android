@@ -174,7 +174,7 @@ public final class ConsentCmp {
                         if (cached != null) {
                             try {
                                 JSONObject json = new JSONObject(cached);
-                                appearance = appearances.fromConfig(json);
+                                appearance = appearances.fromCachedConfig(json);
                                 ConsentConfig config = ConsentJson.parseConfig(json);
                                 cachedConfig = config;
                                 postSuccess(callback, config);
@@ -222,7 +222,7 @@ public final class ConsentCmp {
         }
         try {
             JSONObject json = new JSONObject(raw);
-            appearance = appearances.fromConfig(json);
+            appearance = appearances.fromCachedConfig(json);
             return ConsentJson.parseConfig(json);
         } catch (JSONException e) {
             return null;

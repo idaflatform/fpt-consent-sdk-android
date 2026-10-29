@@ -85,4 +85,12 @@ public class AppearanceRepositoryTest {
         assertEquals(12, theme.radius("cardRadius", 12), 0);
         assertEquals(14, theme.size("body", 14), 0);
     }
+    @Test public void unchangedReorderedConfigReusesThePreparedAppearanceWithoutNetwork() throws Exception {
+        AppearanceRepository repo = new AppearanceRepository(context, options("same"), () -> { throw new AssertionError("Extra request"); });
+        JSONObject first = new JSONObject().put("data", new JSONObject().put("appearance", response("stable")));
+        ConsentAppearance prepared = repo.fromConfig(first);
+        JSONObject reordered = new JSONObject("{\"data\":{\"appearance\":{\"revision\":\"stable\",\"typography\":{\"family\":\"system\"},\"theme\":{\"colors\":{\"primary\":\"#5522AA\"}},\"schemaVersion\":1}}}");
+        assertSame(prepared, repo.fromConfig(reordered));
+    }
+
 }

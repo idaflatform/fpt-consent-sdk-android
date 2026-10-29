@@ -13,6 +13,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import vn.fpt.fis.cmp.consent.api.ConsentApiClient;
 import vn.fpt.fis.cmp.consent.api.ConsentJson;
 
-/** Read once, persisted without TTL. All entry points execute off the UI thread. */
+/** Persisted fallback, updated from each successful config response. Runs off the UI thread. */
 @SuppressLint("ApplySharedPref") // Calls run on the SDK worker; durability is required before restart.
 public final class AppearanceRepository {
     public interface Loader { JSONObject load() throws Exception; }
@@ -63,27 +64,47 @@ public final class AppearanceRepository {
     }
     /** Reuse the content request response; this path never makes another config request. */
     public synchronized ConsentAppearance fromConfig(JSONObject config) {
-        ConsentAppearance cached = cached();
-        if (cached != null) return cached;
-        if (attempted) return ConsentAppearance.defaults();
         attempted = true;
         return fetch(false, () -> ConsentJson.appearanceFromConfig(config));
     }
+    /** Stored content must not replace a newer valid theme cache. */
+    synchronized ConsentAppearance fromCachedConfig(JSONObject config) {
+        ConsentAppearance existing = cached();
+        if (existing != null && existing.json().optInt("schemaVersion") == 1) return existing;
+        return fromConfig(config);
+    }
     public synchronized ConsentAppearance refresh() { attempted = true; return fetch(true, loader); }
     private ConsentAppearance fetch(boolean refresh, Loader source) {
-        ConsentAppearance previous = current;
-        if (previous == null && refresh) {
-            try { previous = ConsentAppearance.parse(new JSONObject(prefs.getString(key, ""))); }
-            catch (Exception ignored) { }
-        }
+        ConsentAppearance previous = cached();
         try {
             ConsentAppearance result = ConsentAppearance.parse(source.load());
+            if (!refresh && previous != null && sameJson(previous.json(), result.json())) return previous;
             downloadFonts(result);
             prefs.edit().putString(key, result.json().toString()).commit();
             typefaces.clear();
             current = result;
         } catch (Exception ignored) { current = previous == null ? ConsentAppearance.defaults() : previous; }
         return current;
+    }
+    /** Object key order is irrelevant; font arrays retain their ordering. */
+    private static boolean sameJson(Object first, Object second) {
+        if (first instanceof JSONObject && second instanceof JSONObject) {
+            JSONObject a = (JSONObject) first, b = (JSONObject) second;
+            if (a.length() != b.length()) return false;
+            Iterator<String> keys = a.keys();
+            while (keys.hasNext()) {
+                String name = keys.next();
+                if (!b.has(name) || !sameJson(a.opt(name), b.opt(name))) return false;
+            }
+            return true;
+        }
+        if (first instanceof JSONArray && second instanceof JSONArray) {
+            JSONArray a = (JSONArray) first, b = (JSONArray) second;
+            if (a.length() != b.length()) return false;
+            for (int i = 0; i < a.length(); i++) if (!sameJson(a.opt(i), b.opt(i))) return false;
+            return true;
+        }
+        return first == null ? second == null : first.equals(second);
     }
     public synchronized void clear() {
         prefs.edit().remove(key).commit(); current = null; attempted = false; typefaces.clear();

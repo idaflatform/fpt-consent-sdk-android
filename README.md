@@ -1,7 +1,7 @@
 # Tích hợp CMP Consent SDK cho Android — 8 bước
 
 > **Từ `1.2.0` SDK đổi tọa độ thành `io.github.idaplatform:fpt-cmp-sdk`** (bản ≤ `1.1.0` ở
-> `io.github.idaflatform:fpt-consent-sdk`). Chỉ dùng `1.2.0` khi bản này đã xuất hiện trên Maven Central.
+> `io.github.idaflatform:fpt-consent-sdk`). Chỉ dùng `1.2.1` khi bản này đã xuất hiện trên Maven Central.
 > Maintainer — quy trình ký và publish: [PUBLISHING.md](PUBLISHING.md).
 
 Tài liệu dành cho **lập trình viên app**. SDK phát hành trên **Maven Central** — public, không cần tài
@@ -12,10 +12,10 @@ Cần 2 thông tin:
 
 | Thông tin | Ví dụ |
 |---|---|
-| Dependency | `io.github.idaplatform:fpt-cmp-sdk:1.2.0` |
+| Dependency | `io.github.idaplatform:fpt-cmp-sdk:1.2.1` |
 | `codeConfig` (integration key của Collection Point) | `cp_xxx::t_yyy` |
 
-> **Phiên bản hiện tại: `1.1.0`.** Các bước dưới đây dùng 3 tính năng có từ `1.1.0`: **tự khởi tạo từ
+> **Phiên bản hiện tại: `1.2.1`.** Các bước dưới đây dùng 3 tính năng có từ `1.1.0`: **tự khởi tạo từ
 > `<meta-data>`**, **tự tải cấu hình (`cmpAutoLoad`) + `reload()`**, và **`form.submit(...)`**.
 > Đang dùng `1.0.x`? Xem [Nâng cấp từ 1.0.x](#nâng-cấp-từ-10x).
 
@@ -95,7 +95,7 @@ Nexus làm mirror, khai thêm URL mirror đó theo hướng dẫn nội bộ —
 
 ```groovy
 dependencies {
-    implementation 'io.github.idaplatform:fpt-cmp-sdk:1.2.0'
+    implementation 'io.github.idaplatform:fpt-cmp-sdk:1.2.1'
 }
 ```
 
@@ -103,7 +103,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    implementation("io.github.idaplatform:fpt-cmp-sdk:1.2.0")
+    implementation("io.github.idaplatform:fpt-cmp-sdk:1.2.1")
 }
 ```
 

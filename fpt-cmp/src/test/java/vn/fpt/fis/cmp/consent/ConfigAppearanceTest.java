@@ -85,14 +85,15 @@ public class ConfigAppearanceTest {
         if (failure.get() != null) throw failure.get();
         return result.get();
     }
-    @Test public void contentAndAppearanceShareOneRequestAndRefreshIsExplicit() throws Exception {
+    @Test public void contentAndAppearanceShareOneRequestAndUpdateAutomatically() throws Exception {
         ConsentConfig loaded = this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
         assertNotNull(loaded); assertEquals("one", cmp.appearance().revision); assertEquals(1, paths.size());
         response = config("two").toString();
         this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
-        assertEquals("one", cmp.appearance().revision); assertEquals(2, paths.size());
+        assertEquals("two", cmp.appearance().revision); assertEquals(2, paths.size());
+        response = config("three").toString();
         ConsentAppearance refreshed = this.<ConsentAppearance>await(cb -> cmp.refreshAppearance(cb));
-        assertEquals("two", refreshed.revision); assertEquals(3, paths.size());
+        assertEquals("three", refreshed.revision); assertEquals(3, paths.size());
         this.<ConsentAppearance>await(cb -> cmp.getAppearance(cb));
         assertEquals(3, paths.size());
         for (String path : paths) assertTrue(path.startsWith("/api/v1/cmp/consent/config?"));
@@ -120,4 +121,45 @@ public class ConfigAppearanceTest {
         this.<ConsentAppearance>await(cb -> cmp.getAppearance(cb));
         assertEquals("one", cmp.appearance().revision); assertEquals(1, paths.size());
     }
+    @Test public void laterValidConfigRecoversFromMissingAppearanceWithoutClearing() throws Exception {
+        response = config(null).toString();
+        this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
+        assertEquals("default", cmp.appearance().revision);
+        response = config("recovered").toString();
+        this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
+        assertEquals("recovered", cmp.appearance().revision); assertEquals(2, paths.size());
+    }
+    @Test public void missingOrMalformedAppearanceKeepsTheLastGoodTheme() throws Exception {
+        this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
+        response = config(null).toString();
+        this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
+        assertEquals("one", cmp.appearance().revision);
+        JSONObject malformed = config(null);
+        malformed.getJSONObject("data").put("appearance", new JSONObject().put("schemaVersion", 99));
+        response = malformed.toString();
+        this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
+        assertEquals("one", cmp.appearance().revision); assertEquals(3, paths.size());
+        cmp = ConsentCmp.init(RuntimeEnvironment.getApplication(), cmp.options());
+        this.<ConsentAppearance>await(cb -> cmp.getAppearance(cb));
+        assertEquals("one", cmp.appearance().revision); assertEquals(3, paths.size());
+    }
+    @Test public void changedTokensAreAppliedEvenWhenRevisionIsUnchanged() throws Exception {
+        this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
+        JSONObject changed = config("one");
+        changed.getJSONObject("data").getJSONObject("appearance").put("theme",
+                new JSONObject("{\"colors\":{\"primary\":\"#D84315\"}}"));
+        response = changed.toString();
+        this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
+        assertEquals(0xffd84315, cmp.appearance().color("primary", 0));
+        assertEquals(2, paths.size());
+    }
+
+    @Test public void olderCachedContentDoesNotDowngradeANewerAppearance() throws Exception {
+        this.<ConsentConfig>await(cb -> cmp.fetchConfig(cb));
+        response = config("newer").toString();
+        this.<ConsentAppearance>await(cb -> cmp.refreshAppearance(cb));
+        this.<ConsentConfig>await(cb -> cmp.fetchConfig(true, cb));
+        assertEquals("newer", cmp.appearance().revision); assertEquals(2, paths.size());
+    }
+
 }
