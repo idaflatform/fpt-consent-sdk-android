@@ -1,0 +1,52 @@
+import groovy.json.JsonOutput
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.artifacts.result.UnresolvedDependencyResult
+import org.gradle.util.GradleVersion
+
+// Run with: ./gradlew -I tools/security-dependencies.init.gradle auditSecurityDependencies
+// This checks resolved versions; it does not replace Black Duck or its vulnerability feed.
+gradle.projectsEvaluated {
+    rootProject.tasks.register('auditSecurityDependencies') {
+        group = 'verification'
+        description = 'Report SDK runtime/build dependencies and reject known outdated versions.'
+        doLast {
+            def report = [:]
+            def rejected = []
+            rootProject.allprojects.each { project ->
+                def scopes = [buildscript: project.buildscript.configurations.findByName('classpath')]
+                scopes.runtime = project.configurations.findByName('releaseRuntimeClasspath')
+                scopes.unitTests = project.configurations.findByName('debugUnitTestRuntimeClasspath')
+                scopes.each { scope, configuration ->
+                    if (configuration == null || !configuration.canBeResolved) return
+                    def result = configuration.incoming.resolutionResult
+                    def unresolved = result.allDependencies.findAll { it instanceof UnresolvedDependencyResult }
+                    if (!unresolved.empty) {
+                        throw new GradleException("Unresolved dependencies in ${project.path}/${scope}: ${unresolved*.attempted}")
+                    }
+                    def modules = result.allComponents.collect { it.id }
+                            .findAll { it instanceof ModuleComponentIdentifier }
+                            .collect { [group: it.group, name: it.module, version: it.version] }
+                            .sort { "${it.group}:${it.name}:${it.version}" }
+                    report["${project.path}/${scope}"] = modules
+                    modules.each { module ->
+                        if ((module.group == 'org.jetbrains.kotlin' && module.name.startsWith('kotlin-stdlib') && module.version == '1.8.22') ||
+                                (module.group == 'io.netty' && module.version == '4.1.93.Final') ||
+                                (module.group == 'org.bouncycastle' && module.version == '1.78.1') ||
+                                (module.group == 'com.ibm.icu' && module.name == 'icu4j' && module.version == '75.1') ||
+                                (module.group == 'org.jetbrains.kotlin' && module.name == 'kotlin-gradle-plugin' &&
+                                        GradleVersion.version(module.version).baseVersion < GradleVersion.version('2.4.20'))) {
+                            rejected << "${project.path}/${scope}: ${module.group}:${module.name}:${module.version}"
+                        }
+                    }
+                }
+            }
+            def output = rootProject.layout.buildDirectory.file('reports/security-dependencies.json').get().asFile
+            output.parentFile.mkdirs()
+            output.setText(JsonOutput.prettyPrint(JsonOutput.toJson(report)), 'UTF-8')
+            logger.lifecycle("Resolved dependency report: ${output}")
+            if (!rejected.empty) {
+                throw new GradleException('Outdated dependency versions remain:\n' + rejected.unique().join('\n'))
+            }
+        }
+    }
+}

@@ -1,9 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 group = 'vn.fpt.cmp.cmp_consent'
 version = '0.1.0'
 buildscript {
-    ext.kotlin_version='2.1.0'
+    ext.kotlin_version='2.4.21'
     repositories { google(); mavenCentral() }
-    dependencies { classpath 'com.android.tools.build:gradle:8.7.0'; classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" }
+    dependencies { classpath 'com.android.tools.build:gradle:9.5.0'; classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" }
 }
 apply plugin:'com.android.library'
 apply plugin:'kotlin-android'
@@ -16,6 +18,10 @@ android {
     namespace='vn.fpt.cmp.cmp_consent'; compileSdk=35
     defaultConfig { minSdk=21 }
     compileOptions { sourceCompatibility=JavaVersion.VERSION_11; targetCompatibility=JavaVersion.VERSION_11 }
-    kotlinOptions { jvmTarget='11' }
 }
-dependencies { implementation "io.github.idaplatform:fpt-cmp-sdk:${System.getenv('CMP_SDK_VERSION') ?: '1.2.0'}" }
+dependencies {
+    api platform('org.jetbrains.kotlin:kotlin-bom:2.4.21')
+    implementation "io.github.idaplatform:fpt-cmp-sdk:${System.getenv('CMP_SDK_VERSION') ?: '1.2.0'}"
+}
+
+kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_11 } }

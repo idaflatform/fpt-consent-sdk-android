@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Opt in from the host app manifest, or merge these exclusions into existing rules. -->
+<full-backup-content>
+        <exclude domain="sharedpref" path="vn.fpt.fis.cmp.consent.xml" />
+        <exclude domain="sharedpref" path="vn.fpt.fis.cmp.appearance.xml" />
+        <exclude domain="file" path="cmp-appearance-fonts/" />
+</full-backup-content>

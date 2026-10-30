@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: exclude SDK data from both cloud backup and device transfer. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="vn.fpt.fis.cmp.consent.xml" />
+        <exclude domain="sharedpref" path="vn.fpt.fis.cmp.appearance.xml" />
+        <exclude domain="file" path="cmp-appearance-fonts/" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="vn.fpt.fis.cmp.consent.xml" />
+        <exclude domain="sharedpref" path="vn.fpt.fis.cmp.appearance.xml" />
+        <exclude domain="file" path="cmp-appearance-fonts/" />
+    </device-transfer>
+</data-extraction-rules>

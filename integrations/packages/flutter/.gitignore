@@ -24,8 +24,7 @@ migrate_working_dir/
 #.vscode/
 
 # Flutter/Dart/Pub related
-# Libraries should not include pubspec.lock, per https://dart.dev/guides/libraries/private-files#pubspeclock.
-/pubspec.lock
+# Commit pubspec.lock so dependency/security scans use the resolved plugin graph.
 **/doc/api/
 .dart_tool/
 .flutter-plugins-dependencies

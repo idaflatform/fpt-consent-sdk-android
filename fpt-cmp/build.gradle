@@ -36,6 +36,14 @@ android {
 }
 
 dependencies {
+    // Publish alignment for Gradle and Maven consumers, including transitive AndroidX Kotlin.
+    api platform('org.jetbrains.kotlin:kotlin-bom:2.4.21')
+    ['kotlin-stdlib', 'kotlin-stdlib-jdk7', 'kotlin-stdlib-jdk8'].each { module ->
+        api("org.jetbrains.kotlin:${module}:2.4.21") {
+            because 'Publish the complete runtime floor for consumers without Gradle metadata'
+        }
+    }
+
     // Public API dung FragmentManager + annotation nen de o 'api' cho app consume duoc.
     api 'androidx.fragment:fragment:1.8.2'
     api 'androidx.annotation:annotation:1.8.2'
@@ -46,7 +54,7 @@ dependencies {
 
     // ConsentStateTest chay tren JVM; truoc day thieu nen test khong bien dich duoc.
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.robolectric:robolectric:4.14.1'
+    testImplementation 'org.robolectric:robolectric:4.17'
 }
 
 mavenPublishing {
@@ -55,9 +63,8 @@ mavenPublishing {
     // Can variant khac thi dung:
     //   configure(new com.vanniktech.maven.publish.AndroidSingleVariantLibrary('release', true, true))
 
-    // Upload len Central Portal roi tu release. Doi tham so thu hai thanh false neu muon
-    // tu bam Publish tren https://central.sonatype.com/publishing/deployments.
-    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL, true)
+    // Central Portal publishing; publishAndReleaseToMavenCentral releases automatically.
+    publishToMavenCentral()
 
     // Chi ky khi da cau hinh khoa GPG. Nho vay `publishToMavenLocal` chay duoc de kiem tra artifact
     // ngay ca khi chua tao khoa; con khi day len Central thi bat buoc phai co (Central tu choi

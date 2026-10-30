@@ -1,8 +1,14 @@
+// Upgrade AGP's built-in compiler as well as the published Kotlin runtime.
+buildscript {
+    repositories { google(); mavenCentral() }
+    dependencies { classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21' }
+}
+
 plugins {
-    // Giu cung version AGP voi app BizNext (8.7.0): khac version thi khong includeBuild SDK vao app duoc.
-    id 'com.android.library' version '8.7.0' apply false
-    id 'com.android.application' version '8.7.0' apply false
+    // Release build toolchain; host applications consume the published AAR.
+    id 'com.android.library' version '9.5.0' apply false
+    id 'com.android.application' version '9.5.0' apply false
     // Publish len Maven Central (Sonatype Central Portal). Kiem tra ban moi nhat tren
     // https://plugins.gradle.org/plugin/com.vanniktech.maven.publish truoc khi nang.
-    id 'com.vanniktech.maven.publish' version '0.30.0' apply false
+    id 'com.vanniktech.maven.publish' version '0.37.0' apply false
 }

@@ -1,4 +1,4 @@
-buildscript {repositories{google();mavenCentral()};dependencies{classpath 'com.android.tools.build:gradle:8.7.0'}}
+buildscript {repositories{google();mavenCentral()};dependencies{classpath 'com.android.tools.build:gradle:9.5.0'}}
 apply plugin:'com.android.library'
 android {namespace 'vn.fpt.cmp.capacitor';compileSdk 35;defaultConfig{minSdk 23};compileOptions{sourceCompatibility JavaVersion.VERSION_11;targetCompatibility JavaVersion.VERSION_11}}
 repositories{google();mavenCentral();if(System.getenv('CMP_MAVEN_REPO'))maven{url=uri(System.getenv('CMP_MAVEN_REPO'))};if(System.getenv('CMP_BRIDGE_MAVEN_REPO'))maven{url=uri(System.getenv('CMP_BRIDGE_MAVEN_REPO'))}}
