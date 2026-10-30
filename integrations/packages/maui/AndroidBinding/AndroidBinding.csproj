@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
- <PropertyGroup><TargetFramework>net9.0-android</TargetFramework><SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion><IsBindingProject>true</IsBindingProject><Nullable>enable</Nullable></PropertyGroup>
+ <PropertyGroup><RestorePackagesWithLockFile>true</RestorePackagesWithLockFile><TargetFramework>net9.0-android</TargetFramework><SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion><IsBindingProject>true</IsBindingProject><Nullable>enable</Nullable></PropertyGroup>
  <ItemGroup>
   <AndroidLibrary Include="$(CmpBridgeAar)" />
   <AndroidLibrary Include="$(CmpSdkAar)" Bind="false" />

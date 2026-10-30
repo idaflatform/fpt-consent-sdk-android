@@ -6,6 +6,7 @@
 **/local.properties
 **/.flutter-plugins-dependencies
 **/pubspec.lock
+!packages/flutter/pubspec.lock
 **/.swiftpm/
 **/DerivedData/
 .env
@@ -15,3 +16,7 @@ test-results/
 **/*.inspect.ndjson
 ios/Examples/CMPExamples.xcodeproj/
 ios/Frameworks/CMPFrameworks.xcodeproj/
+
+# .NET restore/build intermediates; packages.lock.json stays tracked.
+**/obj/
+**/bin/
