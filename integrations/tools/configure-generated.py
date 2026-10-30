@@ -1,5 +1,6 @@
 """One-time conversion of Flutter-generated hosts to the integration example."""
 from pathlib import Path
+import re
 import shutil
 root=Path(__file__).resolve().parents[1]
 p=root/'packages/flutter'
@@ -26,12 +27,14 @@ flutter:
       ios:
         pluginClass: MobileConsentPlugin
 ''',encoding='utf-8')
-(p/'android/build.gradle').write_text('''group = 'vn.fpt.cmp.cmp_consent'
+(p/'android/build.gradle').write_text('''import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+group = 'vn.fpt.cmp.cmp_consent'
 version = '0.1.0'
 buildscript {
-    ext.kotlin_version='2.1.0'
+    ext.kotlin_version='2.4.21'
     repositories { google(); mavenCentral() }
-    dependencies { classpath 'com.android.tools.build:gradle:8.7.0'; classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" }
+    dependencies { classpath 'com.android.tools.build:gradle:9.5.0'; classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" }
 }
 apply plugin:'com.android.library'
 apply plugin:'kotlin-android'
@@ -44,9 +47,13 @@ android {
     namespace='vn.fpt.cmp.cmp_consent'; compileSdk=35
     defaultConfig { minSdk=21 }
     compileOptions { sourceCompatibility=JavaVersion.VERSION_11; targetCompatibility=JavaVersion.VERSION_11 }
-    kotlinOptions { jvmTarget='11' }
 }
-dependencies { implementation "io.github.idaplatform:fpt-cmp-sdk:${System.getenv('CMP_SDK_VERSION') ?: '1.2.0'}" }
+kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_11 } }
+
+dependencies {
+    api platform('org.jetbrains.kotlin:kotlin-bom:2.4.21')
+    implementation "io.github.idaplatform:fpt-cmp-sdk:${System.getenv('CMP_SDK_VERSION') ?: '1.2.0'}"
+}
 ''',encoding='utf-8')
 (p/'ios/cmp_consent.podspec').write_text('''Pod::Spec.new do |s|
   s.name='cmp_consent'
@@ -66,13 +73,26 @@ end
 ''',encoding='utf-8')
 (p/'example/lib/main.dart').write_text("import 'package:flutter/material.dart';\nimport 'consent_example.dart';\nvoid main()=>runApp(const MaterialApp(home:ConsentExample()));\n",encoding='utf-8')
 settings=p/'example/android/settings.gradle.kts'
-settings.write_text(settings.read_text().replace('8.9.1','8.7.0'),encoding='utf-8')
+settings_text=settings.read_text(encoding='utf-8')
+settings_text=re.sub(r'(id\("com\.android\.application"\) version ")[^"]+(")',r'\g<1>9.5.0\g<2>',settings_text)
+settings_text=re.sub(r'(id\("org\.jetbrains\.kotlin\.android"\) version ")[^"]+(")',r'\g<1>2.4.21\g<2>',settings_text)
+settings.write_text(settings_text,encoding='utf-8')
 wrapper=p/'example/android/gradle/wrapper/gradle-wrapper.properties'
-wrapper.write_text(wrapper.read_text().replace('gradle-8.12-all','gradle-8.10-bin').replace('gradle-8.10.2-all','gradle-8.10-bin'),encoding='utf-8')
+wrapper_text=re.sub(r'gradle-[0-9.]+-(?:all|bin)\.zip','gradle-9.6.0-bin.zip',wrapper.read_text(encoding='utf-8'))
+wrapper_text=re.sub(r'(?m)^distributionSha256Sum=.*\n?','',wrapper_text)
+wrapper.write_text(wrapper_text.rstrip()+'\ndistributionSha256Sum=bbaeb2fef8710818cf0e261201dab964c572f92b942812df0c3620d62a529a01\n',encoding='utf-8')
+app_gradle=p/'example/android/app/build.gradle.kts'
+app_text=app_gradle.read_text(encoding='utf-8')
+app_text=re.sub(r'\n    kotlinOptions \{\s*jvmTarget = JavaVersion\.VERSION_11\.toString\(\)\s*\}\n','\n',app_text)
+if 'import org.jetbrains.kotlin.gradle.dsl.JvmTarget' not in app_text:
+    app_text='import org.jetbrains.kotlin.gradle.dsl.JvmTarget\n\n'+app_text
+if 'jvmTarget.set(JvmTarget.JVM_11)' not in app_text:
+    app_text+='\nkotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_11) } }\n'
+app_gradle.write_text(app_text,encoding='utf-8')
 gradle=p/'example/android/build.gradle.kts'
 gradle.write_text(gradle.read_text().replace('mavenCentral()','mavenCentral()\n        System.getenv("CMP_MAVEN_REPO")?.let { maven { url = uri(it) } }'),encoding='utf-8')
 props=p/'example/android/gradle.properties'
-props.write_text('org.gradle.jvmargs=-Xmx2048m\norg.gradle.workers.max=2\nkotlin.compiler.execution.strategy=in-process\nandroid.useAndroidX=true\nandroid.enableJetifier=true\n',encoding='utf-8')
+props.write_text('org.gradle.jvmargs=-Xmx2048m\norg.gradle.workers.max=2\nkotlin.compiler.execution.strategy=in-process\nandroid.useAndroidX=true\nandroid.enableJetifier=true\nandroid.builtInKotlin=false\nandroid.newDsl=false\n',encoding='utf-8')
 debug=p/'example/android/app/src/debug/AndroidManifest.xml'
 debug.write_text('<manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/><application android:usesCleartextTraffic="true" /></manifest>',encoding='utf-8')
 pbx=p/'example/ios/Runner.xcodeproj/project.pbxproj'

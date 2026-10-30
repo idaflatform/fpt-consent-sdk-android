@@ -36,3 +36,14 @@ Không tự retry POST. Xem ../../docs/integration-contract.md từ gốc bộ t
 
 Plugin hiện là release candidate cục bộ, chưa phát hành pub.dev. Tình trạng build
 và thiết bị được ghi riêng trong validation.md tại gốc bộ tích hợp.
+
+## Dependency locking and Android build tools
+
+Commit `pubspec.lock` của plugin để security scanner có đầy đủ phiên bản và
+checksum đã resolve. CI dùng `flutter pub get --enforce-lockfile`; cập nhật
+lockfile có chủ đích bằng `flutter pub get` rồi review diff.
+
+Android example dùng AGP 9.5.0 / Gradle 9.6.0 và Kotlin 2.4.21. Với Flutter
+Gradle integration còn dùng legacy Android DSL, host cần hai property
+`android.builtInKotlin=false` và `android.newDsl=false` như example. Các property
+này thuộc host; plugin không tự ghi đè cấu hình build của ứng dụng tích hợp.

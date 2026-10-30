@@ -1,6 +1,27 @@
+// Keep AGP built-in Kotlin and the Compose compiler on the same version.
+buildscript {
+    repositories { google(); mavenCentral() }
+    dependencies { classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21' }
+}
+
 plugins {
-    id 'com.android.application' version '8.7.0' apply false
-    id 'com.android.library' version '8.7.0' apply false
-    id 'org.jetbrains.kotlin.android' version '2.1.0' apply false
-    id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false
+    id 'com.android.application' version '9.5.0' apply false
+    id 'com.android.library' version '9.5.0' apply false
+    id 'org.jetbrains.kotlin.plugin.compose' version '2.4.21' apply false
+}
+
+// Examples can consume an older public SDK while validating its adapters. Align
+// legacy jdk7/jdk8 aliases too; upgrading only stdlib leaves their old versions.
+subprojects {
+    pluginManager.withPlugin('com.android.application') {
+        dependencies { implementation platform('org.jetbrains.kotlin:kotlin-bom:2.4.21') }
+    }
+    pluginManager.withPlugin('com.android.library') {
+        dependencies {
+            api platform('org.jetbrains.kotlin:kotlin-bom:2.4.21')
+            ['kotlin-stdlib', 'kotlin-stdlib-jdk7', 'kotlin-stdlib-jdk8'].each { module ->
+                api "org.jetbrains.kotlin:${module}:2.4.21"
+            }
+        }
+    }
 }
