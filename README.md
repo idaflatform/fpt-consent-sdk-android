@@ -641,3 +641,35 @@ hình lần nào (trước đây gửi luôn mà không kiểm tra mục bắt b
 Gửi kèm khi báo lỗi cho đội CMP: `codeConfig`, `consentId` nhận được, thời điểm, và log tag `CMP`.
 
 ---
+
+## Bảo vệ dữ liệu SDK khỏi Android backup
+
+Thư viện không đặt `android:allowBackup` hoặc ghi đè chính sách backup của ứng dụng.
+Nếu app chưa khai báo exclusion, SharedPreferences và file SDK **vẫn có thể được
+backup/khôi phục** theo chính sách mặc định của app. App tích hợp cần opt in:
+
+```xml
+<application
+    android:fullBackupContent="@xml/cmp_backup_rules"
+    android:dataExtractionRules="@xml/cmp_data_extraction_rules">
+    <!-- Các cấu hình khác của app -->
+</application>
+```
+
+Hai resource XML này được đóng gói trong AAR. `fullBackupContent` áp dụng cho
+Android 6–11 (và app còn target API dưới 31); `dataExtractionRules` áp dụng
+trên Android 12+ khi app target API 31+, cho cả cloud backup và
+chuyển dữ liệu sang thiết bị khác. Cả hai loại trừ:
+
+| Domain | Path của SDK |
+|---|---|
+| `sharedpref` | `vn.fpt.fis.cmp.consent.xml` — visitor ID, quyết định và cache config |
+| `sharedpref` | `vn.fpt.fis.cmp.appearance.xml` — cache theme/font configuration |
+| `file` | `cmp-appearance-fonts/` — các file font tải về |
+
+Nếu app đã dùng rule riêng, **giữ các rule đó** và chép ba `<exclude>` vào
+`<full-backup-content>`, đồng thời vào cả `<cloud-backup>` và `<device-transfer>`
+trong rule Android 12+. Không thêm `<include>` chỉ dành cho SDK vì nó có thể thay
+đổi phạm vi backup dữ liệu khác của app. Không cần tắt backup toàn bộ ứng dụng.
+Sau khi tích hợp, kiểm tra merged manifest của app để bảo đảm cả hai resource
+được tham chiếu, và kiểm tra luồng backup/restore trên các API Android được hỗ trợ.
